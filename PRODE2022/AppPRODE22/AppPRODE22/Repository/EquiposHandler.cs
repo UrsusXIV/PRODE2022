@@ -108,7 +108,7 @@ namespace AppPRODE22.Repository
             {
                 bool update = false;
 
-                var UpdateQuery = $"UPDATE Equipos SET EquipoNombre = @EquipoNombre WHERE IDEquipo = @IDEquipo";
+                var UpdateQuery = "UPDATE Equipos SET EquipoNombre = @EquipoNombre WHERE IDEquipo = @IDEquipo";
 
                 sqlConnection.Open();
 
@@ -142,7 +142,7 @@ namespace AppPRODE22.Repository
             {
                 bool delete = false;
 
-                var DeleteString = $"DELETE FROM Equipos WHERE IDEquipo = @IDEquipo";
+                var DeleteString = "DELETE FROM Equipos WHERE IDEquipo = @IDEquipo";
 
 
                 sqlConnection.Open();
