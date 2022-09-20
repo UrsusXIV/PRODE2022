@@ -15,12 +15,15 @@ namespace AppPRODE22.Repository
 
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
-                var InsertQuery = $"INSERT INTO Equipos (IDEquipo, EquipoNombre) Values ({altaEquipoBody.IdEquipo}, '{altaEquipoBody.EquipoNombre}')";
+                var InsertQuery = "INSERT INTO Equipos (IDEquipo, EquipoNombre) Values (@IDEquipo, @EquipoNombre)";
 
                 sqlConnection.Open();
 
                 using (SqlCommand sqlCommand = new SqlCommand(InsertQuery, sqlConnection))
                 {
+                    sqlCommand.Parameters.Add(new SqlParameter("IDEquipo", System.Data.SqlDbType.Int) { Value = altaEquipoBody.IdEquipo });
+
+                    sqlCommand.Parameters.Add(new SqlParameter("EquipoNombre", System.Data.SqlDbType.VarChar) { Value = altaEquipoBody.EquipoNombre });
 
                     int numberOfRows = sqlCommand.ExecuteNonQuery();
 
@@ -39,7 +42,7 @@ namespace AppPRODE22.Repository
             }
         }
 
-        // ---------------------------------------------------------
+        // ----------------------POST FIXED.-----------------------------------
 
         public static List<GetEquipoDTO> consultaEquiposHandler(GetEquipoDTO consultaEquipoBody)
         {
@@ -58,7 +61,7 @@ namespace AppPRODE22.Repository
                 else
                 {
 
-                    SelectQuery = $"SELECT * FROM Equipos WHERE IdEquipo = {consultaEquipoBody.IdEquipo}";
+                    SelectQuery = "SELECT * FROM Equipos WHERE IDEquipo = @IDEquipo";
 
                 }
 
@@ -66,7 +69,8 @@ namespace AppPRODE22.Repository
 
                 using (SqlCommand sqlCommand = new SqlCommand(SelectQuery, sqlConnection))
                 {
-
+                    sqlCommand.Parameters.Add(new SqlParameter("IDEquipo", System.Data.SqlDbType.Int) {Value = consultaEquipoBody.IdEquipo});
+                    
                     using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
                     {
 
@@ -104,12 +108,16 @@ namespace AppPRODE22.Repository
             {
                 bool update = false;
 
-                var UpdateQuery = $"UPDATE Equipos SET EquipoNombre = '{modificacionEquipoBody.EquipoNombre}' WHERE IDEquipo = {modificacionEquipoBody.IdEquipo}";
+                var UpdateQuery = $"UPDATE Equipos SET EquipoNombre = @EquipoNombre WHERE IDEquipo = @IDEquipo";
 
                 sqlConnection.Open();
 
                 using(SqlCommand sqlCommand = new SqlCommand(UpdateQuery, sqlConnection))
                 {
+
+                    sqlCommand.Parameters.Add(new SqlParameter("EquipoNombre", System.Data.SqlDbType.VarChar) { Value = modificacionEquipoBody.EquipoNombre});
+
+                    sqlCommand.Parameters.Add(new SqlParameter("IDEquipo", System.Data.SqlDbType.Int) { Value = modificacionEquipoBody.IdEquipo });
 
                     int numberOfRows = sqlCommand.ExecuteNonQuery();
 
@@ -134,13 +142,15 @@ namespace AppPRODE22.Repository
             {
                 bool delete = false;
 
-                var DeleteString = $"DELETE FROM Equipos WHERE IdEquipo = {bajaEquipoBody.IdEquipo}";
+                var DeleteString = $"DELETE FROM Equipos WHERE IDEquipo = @IDEquipo";
 
 
                 sqlConnection.Open();
 
                 using(SqlCommand sqlCommand = new SqlCommand(DeleteString, sqlConnection))
                 {
+
+                    sqlCommand.Parameters.Add(new SqlParameter("IDEquipo", System.Data.SqlDbType.Int) { Value = bajaEquipoBody.IdEquipo });
 
                     int numberOfRows = sqlCommand.ExecuteNonQuery();
 
