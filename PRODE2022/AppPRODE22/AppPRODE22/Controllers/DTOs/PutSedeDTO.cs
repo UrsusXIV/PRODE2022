@@ -1,6 +1,6 @@
 ﻿namespace AppPRODE22.Controllers.DTOs
 {
-    public class PostSedeDTO
+    public class PutSedeDTO
     {
         public int SedeID { get; set; }
 
