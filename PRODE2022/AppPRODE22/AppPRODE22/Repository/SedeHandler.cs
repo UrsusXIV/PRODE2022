@@ -6,24 +6,24 @@ using AppPRODE22.Models;
 
 namespace AppPRODE22.Repository
 {
-    public class EquiposHandler : DBHandler
+    public class SedeHandler : DBHandler
     {
-        // Metodo para dar de alta a los equipos.-
-        public static bool altaEquipoHandler(PostEquipoDTO altaEquipoBody)
+        // Metodo para dar de alta a las sedes.-
+        public static bool altaSedeHandler(PostSedeDTO altaSedeBody)
         {
             bool insert = false;
 
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
-                var InsertQuery = "INSERT INTO Equipos (IDEquipo, EquipoNombre) Values (@IDEquipo, @EquipoNombre)";
+                var InsertQuery = "INSERT INTO Sedes (SedeID, SedeNombre) Values (@SedeID, @SedeNombre)";
 
                 sqlConnection.Open();
 
                 using (SqlCommand sqlCommand = new SqlCommand(InsertQuery, sqlConnection))
                 {
-                    sqlCommand.Parameters.Add(new SqlParameter("IDEquipo", System.Data.SqlDbType.Int) { Value = altaEquipoBody.IdEquipo });
+                    sqlCommand.Parameters.Add(new SqlParameter("SedeID", System.Data.SqlDbType.Int) { Value = altaSedeBody.SedeID });
 
-                    sqlCommand.Parameters.Add(new SqlParameter("EquipoNombre", System.Data.SqlDbType.VarChar) { Value = altaEquipoBody.EquipoNombre });
+                    sqlCommand.Parameters.Add(new SqlParameter("SedeNombre", System.Data.SqlDbType.VarChar) { Value = altaSedeBody.SedeNombre });
 
                     int numberOfRows = sqlCommand.ExecuteNonQuery();
 
@@ -42,26 +42,26 @@ namespace AppPRODE22.Repository
             }
         }
 
-        // ----------------------POST FIXED.-----------------------------------
+        // ---------------------------------------------------------
 
-        public static List<GetEquipoDTO> consultaEquiposHandler(GetEquipoDTO consultaEquipoBody)
+        public static List<GetSedeDTO> consultaSedeHandler(GetSedeDTO consultaSedeBody)
         {
-            List<GetEquipoDTO> listaEquipos = new List<GetEquipoDTO>();
+            List<GetSedeDTO> listaSedes = new List<GetSedeDTO>();
 
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
                 var SelectQuery = string.Empty;
 
-                if (consultaEquipoBody.IdEquipo == 0)
+                if (consultaSedeBody.SedeID == 0)
                 {
-                    SelectQuery = "SELECT * FROM Equipos";
+                    SelectQuery = "SELECT * FROM Sedes";
 
                 }
 
                 else
                 {
 
-                    SelectQuery = "SELECT * FROM Equipos WHERE IDEquipo = @IDEquipo";
+                    SelectQuery = "SELECT * FROM Sedes WHERE SedeID = @SedeID";
 
                 }
 
@@ -69,7 +69,7 @@ namespace AppPRODE22.Repository
 
                 using (SqlCommand sqlCommand = new SqlCommand(SelectQuery, sqlConnection))
                 {
-                    sqlCommand.Parameters.Add(new SqlParameter("IDEquipo", System.Data.SqlDbType.Int) {Value = consultaEquipoBody.IdEquipo});
+                    sqlCommand.Parameters.Add(new SqlParameter("SedeID", System.Data.SqlDbType.Int) {Value = consultaSedeBody.SedeID});
                     
                     using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
                     {
@@ -78,13 +78,13 @@ namespace AppPRODE22.Repository
                         {
                             while (sqlDataReader.Read())
                             {
-                                var equipoDTO = new GetEquipoDTO();
+                                var sedeDTO = new GetSedeDTO();
 
-                                equipoDTO.IdEquipo = Convert.ToInt32(sqlDataReader["IdEquipo"]);
+                                sedeDTO.SedeID = Convert.ToInt32(sqlDataReader["SedeID"]);
 
-                                equipoDTO.EquipoNombre = sqlDataReader["EquipoNombre"].ToString();
+                                sedeDTO.SedeNombre = sqlDataReader["SedeNombre"].ToString();
 
-                                listaEquipos.Add(equipoDTO);
+                                listaSedes.Add(sedeDTO);
 
                             }
 
@@ -97,27 +97,27 @@ namespace AppPRODE22.Repository
                 sqlConnection.Close();
             }
 
-            return listaEquipos;
+            return listaSedes;
         }
 
         //----------------------------
 
-        public static bool modificacionEquiposHandler(PutEquipoDTO modificacionEquipoBody)
+        public static bool modificacionSedeHandler(PutSedeDTO modificacionSedeBody)
         {
             using(SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
                 bool update = false;
 
-                var UpdateQuery = "UPDATE Equipos SET EquipoNombre = @EquipoNombre WHERE IDEquipo = @IDEquipo";
+                var UpdateQuery = "UPDATE Sedes SET SedeNombre = @SedeNombre WHERE SedeID = @SedeID";
 
                 sqlConnection.Open();
 
                 using(SqlCommand sqlCommand = new SqlCommand(UpdateQuery, sqlConnection))
                 {
 
-                    sqlCommand.Parameters.Add(new SqlParameter("EquipoNombre", System.Data.SqlDbType.VarChar) { Value = modificacionEquipoBody.EquipoNombre});
+                    sqlCommand.Parameters.Add(new SqlParameter("SedeNombre", System.Data.SqlDbType.VarChar) { Value = modificacionSedeBody.SedeNombre});
 
-                    sqlCommand.Parameters.Add(new SqlParameter("IDEquipo", System.Data.SqlDbType.Int) { Value = modificacionEquipoBody.IdEquipo });
+                    sqlCommand.Parameters.Add(new SqlParameter("SedeID", System.Data.SqlDbType.Int) { Value = modificacionSedeBody.SedeID });
 
                     int numberOfRows = sqlCommand.ExecuteNonQuery();
 
@@ -136,13 +136,13 @@ namespace AppPRODE22.Repository
             
         }
 
-        public static bool bajaEquipoHandler(DeleteEquipoDTO bajaEquipoBody)
+        public static bool bajaSedeHandler(DeleteSedeDTO bajaSedeBody)
         {
             using(SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
                 bool delete = false;
 
-                var DeleteString = "DELETE FROM Equipos WHERE IDEquipo = @IDEquipo";
+                var DeleteString = "DELETE FROM Sedes WHERE SedeID = @SedeID";
 
 
                 sqlConnection.Open();
@@ -150,7 +150,7 @@ namespace AppPRODE22.Repository
                 using(SqlCommand sqlCommand = new SqlCommand(DeleteString, sqlConnection))
                 {
 
-                    sqlCommand.Parameters.Add(new SqlParameter("IDEquipo", System.Data.SqlDbType.Int) { Value = bajaEquipoBody.IdEquipo });
+                    sqlCommand.Parameters.Add(new SqlParameter("SedeID", System.Data.SqlDbType.Int) { Value = bajaSedeBody.SedeID});
 
                     int numberOfRows = sqlCommand.ExecuteNonQuery();
 
@@ -175,3 +175,6 @@ namespace AppPRODE22.Repository
 
     }
 }
+
+
+// TEST.-1
