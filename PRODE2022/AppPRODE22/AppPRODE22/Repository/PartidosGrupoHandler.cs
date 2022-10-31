@@ -8,24 +8,46 @@ using AppPRODE22.Models;
 
 namespace AppPRODE22.Repository
 {
-    public class SedeHandler : DBHandler
+    public class PartidosGrupoHandler : DBHandler
     {
         // Metodo para dar de alta a las sedes.-
-        public static bool altaSedeHandler(PostSedeDTO altaSedeBody)
+        public static bool altaPartidosGrupoHandler(PostPartidosGruposDTO altaPartidosGrupoBody)
         {
             bool insert = false;
 
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
-                var InsertQuery = "INSERT INTO Sedes (SedeID, SedeNombre) Values (@SedeID, @SedeNombre)";
+                var InsertQuery = "INSERT INTO PartidosGrupos (IDPartido, PartIDCompetencia, PartGrupo, PartIDEquipoL, PartIDEquipoV, PartIDSede, PartFecha, PartHora, PartIDEstado, PartGolesL, PartGolesV, PartPuntosL, PartPuntosV) Values (@IDPartido, @PartIDCompetencia, @PartGrupo, @PartIDEquipoL, @PartIDEquipoV, @PartIDSede, @PartFecha, @PartHora, @PartIDEstado, @PartGolesL, @PartGolesV, @PartPuntosL, @PartPuntosV)";
 
                 sqlConnection.Open();
 
                 using (SqlCommand sqlCommand = new SqlCommand(InsertQuery, sqlConnection))
                 {
-                    sqlCommand.Parameters.Add(new SqlParameter("SedeID", System.Data.SqlDbType.Int) { Value = altaSedeBody.SedeID });
+                    sqlCommand.Parameters.Add(new SqlParameter("IDPartido", System.Data.SqlDbType.Int) { Value = altaPartidosGrupoBody.PartIDPartido });
 
-                    sqlCommand.Parameters.Add(new SqlParameter("SedeNombre", System.Data.SqlDbType.VarChar) { Value = altaSedeBody.SedeNombre });
+                    sqlCommand.Parameters.Add(new SqlParameter("PartIDCompetencia", System.Data.SqlDbType.Int) { Value = altaPartidosGrupoBody.PartIDCompetencia });
+
+                    sqlCommand.Parameters.Add(new SqlParameter("PartGrupo", System.Data.SqlDbType.VarChar) { Value = altaPartidosGrupoBody.PartGrupo });
+
+                    sqlCommand.Parameters.Add(new SqlParameter("PartIDEquipoL", System.Data.SqlDbType.Int) { Value = altaPartidosGrupoBody.PartIDEquipoL });
+
+                    sqlCommand.Parameters.Add(new SqlParameter("PartIDEquipoV", System.Data.SqlDbType.Int) { Value = altaPartidosGrupoBody.PartIDEquipoV });
+
+                    sqlCommand.Parameters.Add(new SqlParameter("PartIDSede", System.Data.SqlDbType.Int) { Value = altaPartidosGrupoBody.PartIDSede });
+
+                    sqlCommand.Parameters.Add(new SqlParameter("PartFecha", System.Data.SqlDbType.Date) { Value = altaPartidosGrupoBody.PartFechaDate });
+
+                    sqlCommand.Parameters.Add(new SqlParameter("PartHora", System.Data.SqlDbType.Time) { Value = altaPartidosGrupoBody.PartHoraTime });
+
+                    sqlCommand.Parameters.Add(new SqlParameter("PartIDEstado", System.Data.SqlDbType.Int) { Value = altaPartidosGrupoBody.PartIDEstado });
+
+                    sqlCommand.Parameters.Add(new SqlParameter("PartGolesL", System.Data.SqlDbType.Int) { Value = altaPartidosGrupoBody.PartGolesL });
+
+                    sqlCommand.Parameters.Add(new SqlParameter("PartGolesV", System.Data.SqlDbType.Int) { Value = altaPartidosGrupoBody.PartGolesV });
+
+                    sqlCommand.Parameters.Add(new SqlParameter("PartPuntosL", System.Data.SqlDbType.Int) { Value = altaPartidosGrupoBody.PartPuntosL });
+
+                    sqlCommand.Parameters.Add(new SqlParameter("PartPuntosV", System.Data.SqlDbType.Int) { Value = altaPartidosGrupoBody.PartPuntosV });
 
                     int numberOfRows = sqlCommand.ExecuteNonQuery();
 
@@ -46,24 +68,24 @@ namespace AppPRODE22.Repository
 
         // ---------------------------------------------------------
 
-        public static List<GetSedeDTO> consultaSedeHandler(GetSedeDTO consultaSedeBody)
+        public static List<GetPartidosGruposDTO> consultaPartidosGrupoHandler(GetPartidosGruposDTO consultaPartidosGrupoBody)
         {
-            List<GetSedeDTO> listaSedes = new List<GetSedeDTO>();
+            List<GetPartidosGruposDTO> listaPartidosGrupo = new List<GetPartidosGruposDTO>();
 
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
                 var SelectQuery = string.Empty;
 
-                if (consultaSedeBody.SedeID == 0)
+                if (consultaPartidosGrupoBody.PartIDEstado == 0)
                 {
-                    SelectQuery = "SELECT * FROM Sedes";
+                    SelectQuery = "SELECT * FROM PartidosGrupos";
 
                 }
 
                 else
                 {
 
-                    SelectQuery = "SELECT * FROM Sedes WHERE SedeID = @SedeID";
+                    SelectQuery = "SELECT * FROM PartidosGrupos WHERE IDPartido = @IDPartido";
 
                 }
 
@@ -71,7 +93,7 @@ namespace AppPRODE22.Repository
 
                 using (SqlCommand sqlCommand = new SqlCommand(SelectQuery, sqlConnection))
                 {
-                    sqlCommand.Parameters.Add(new SqlParameter("SedeID", System.Data.SqlDbType.Int) {Value = consultaSedeBody.SedeID});
+                    sqlCommand.Parameters.Add(new SqlParameter("IDPartido", System.Data.SqlDbType.Int) {Value = consultaPartidosGrupoBody.PartIDEstado});
                     
                     using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
                     {
@@ -80,13 +102,29 @@ namespace AppPRODE22.Repository
                         {
                             while (sqlDataReader.Read())
                             {
-                                var sedeDTO = new GetSedeDTO();
+                                var partidosgruposDTO = new GetPartidosGruposDTO();
 
-                                sedeDTO.SedeID = Convert.ToInt32(sqlDataReader["SedeID"]);
+                                partidosgruposDTO.PartIDEstado = Convert.ToInt32(sqlDataReader["PartIDEstado"]);
 
-                                sedeDTO.SedeNombre = sqlDataReader["SedeNombre"].ToString();
+                                partidosgruposDTO.PartIDCompetencia = Convert.ToInt32(sqlDataReader["PartIDCompetencia"]);
 
-                                listaSedes.Add(sedeDTO);
+                                partidosgruposDTO.PartIDPartido = Convert.ToInt32(sqlDataReader["IDPartido"]);
+
+                                partidosgruposDTO.PartIDSede = Convert.ToInt32(sqlDataReader["PartIDSede"]);
+
+                                partidosgruposDTO.PartIDEquipoL = Convert.ToInt32(sqlDataReader["PartIDEquipoL"]);
+
+                                partidosgruposDTO.PartIDEquipoV = Convert.ToInt32(sqlDataReader["PartIDEqupoV"]);
+
+                                partidosgruposDTO.PartGolesL = Convert.ToInt32(sqlDataReader["PartGolesL"]);
+
+                                partidosgruposDTO.PartGolesV = Convert.ToInt32(sqlDataReader["PartGolesV"]);
+
+                                partidosgruposDTO.PartGrupo = sqlDataReader["PartGrupo"].ToString();
+ 
+
+
+                                listaPartidosGrupo.Add(partidosgruposDTO);
 
                             }
 
@@ -99,52 +137,19 @@ namespace AppPRODE22.Repository
                 sqlConnection.Close();
             }
 
-            return listaSedes;
+            return listaPartidosGrupo;
         }
 
         //----------------------------
 
-        public static bool modificacionSedeHandler(PutSedeDTO modificacionSedeBody)
-        {
-            using(SqlConnection sqlConnection = new SqlConnection(connectionString))
-            {
-                bool update = false;
 
-                var UpdateQuery = "UPDATE Sedes SET SedeNombre = @SedeNombre WHERE SedeID = @SedeID";
-
-                sqlConnection.Open();
-
-                using(SqlCommand sqlCommand = new SqlCommand(UpdateQuery, sqlConnection))
-                {
-
-                    sqlCommand.Parameters.Add(new SqlParameter("SedeNombre", System.Data.SqlDbType.VarChar) { Value = modificacionSedeBody.SedeNombre});
-
-                    sqlCommand.Parameters.Add(new SqlParameter("SedeID", System.Data.SqlDbType.Int) { Value = modificacionSedeBody.SedeID });
-
-                    int numberOfRows = sqlCommand.ExecuteNonQuery();
-
-                    if(numberOfRows > 0)
-                    {
-
-                        update = true;
-
-                    }
-
-                }
-                sqlConnection.Close();
-
-                return update;
-            }
-            
-        }
-
-        public static bool bajaSedeHandler(DeleteSedeDTO bajaSedeBody)
+        public static bool bajaPartidosGrupoHandler(DeletePartidosGruposDTO bajaPartidosGrupoBody)
         {
             using(SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
                 bool delete = false;
 
-                var DeleteString = "DELETE FROM Sedes WHERE SedeID = @SedeID";
+                var DeleteString = "DELETE FROM PartidosGrupos WHERE IDPartido = @IDPartido";
 
 
                 sqlConnection.Open();
@@ -152,7 +157,7 @@ namespace AppPRODE22.Repository
                 using(SqlCommand sqlCommand = new SqlCommand(DeleteString, sqlConnection))
                 {
 
-                    sqlCommand.Parameters.Add(new SqlParameter("SedeID", System.Data.SqlDbType.Int) { Value = bajaSedeBody.SedeID});
+                    sqlCommand.Parameters.Add(new SqlParameter("IDPartido", System.Data.SqlDbType.Int) { Value = bajaPartidosGrupoBody.PartIDPartido});
 
                     int numberOfRows = sqlCommand.ExecuteNonQuery();
 

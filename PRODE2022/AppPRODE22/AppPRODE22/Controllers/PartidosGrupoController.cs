@@ -31,15 +31,16 @@ namespace AppPRODE22.Controllers
             return PartidosGrupoHandler.consultaPartidosGrupoHandler(consultaPartidosGrupoBody);
         }
 
+        /*
         [HttpPut]
 
-        public bool modificacionPartidosGrupo([FromBody]PutPartidosGruposDTO modificacionPartidosGrupoBody)
-        {
+         public bool modificacionPartidosGrupo([FromBody]PutPartidosGruposDTO modificacionPartidosGrupoBody)
+         {
 
-            return PartidosGrupoHandler.modificacionPartidosGrupoHandler(modificacionPartidosGrupoBody);
-    
-        }
+             return PartidosGrupoHandler.modificacionPartidosGrupoHandler(modificacionPartidosGrupoBody);
 
+         }
+        */
         [HttpDelete]
 
         public bool bajaPartidosGrupo([FromBody]DeletePartidosGruposDTO bajaPartidosGrupoBody)
