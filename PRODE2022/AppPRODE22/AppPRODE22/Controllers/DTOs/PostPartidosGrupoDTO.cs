@@ -1,6 +1,6 @@
 ﻿namespace AppPRODE22.Controllers.DTOs
 {
-    public class PartidosGruposDTO
+    public class PostPartidosGruposDTO
     {
         public int PartIDPartido { get; set; }
 
