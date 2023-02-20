@@ -12,6 +12,7 @@ namespace AppPRODE22
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            Console.WriteLine("Ingresó a la función Startup");
         }
 
         public IConfiguration Configuration { get; }
