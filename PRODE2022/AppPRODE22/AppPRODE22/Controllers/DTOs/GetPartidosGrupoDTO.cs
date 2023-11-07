@@ -7,7 +7,7 @@
 
         public int PartIDCompetencia { get; set; }
 
-        public string PartGrupo { get; set; }
+        public string PartGrupo { get; set; } = "";
 
         public int PartIDEquipoL { get; set; }
 
@@ -17,7 +17,7 @@
 
         public DateTime PartFechaDate { get; set; }
 
-        public DateTime PartHoraTime { get; set; }
+        public TimeSpan PartHoraTime { get; set; }
 
         public int PartIDEstado { get; set; }
 
@@ -29,7 +29,9 @@
 
         public int PartPuntosV { get; set; }
 
+        public string EquipoLNombre { get; set; } = "";
 
+        public string EquipoVNombre { get; set; } = "";
 
     }
 }

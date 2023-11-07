@@ -22,14 +22,26 @@ namespace AppPRODE22.Controllers
         
         // ---------------------
 
-        [HttpGet]
+       // [HttpGet]
 
         // Si se le informa al backend el ID 0, devolvera todos los equipos, de otra forma, buscara el equipo pedido.
+
+        // comento el controlador GET original, para incorporar uno nuevo que devuelva un array
+        /*
         public List<GetEquipoDTO> consultaEquipos([FromBody] GetEquipoDTO consultaEquiposBody)
         {
 
             return EquiposHandler.consultaEquiposHandler(consultaEquiposBody);
         }
+        */
+
+        [HttpGet]
+        public EquiposResponse consultaEquipos([FromQuery] GetEquipoDTO consultaEquiposBody)
+        {
+            return EquiposHandler.consultaEquiposHandler(consultaEquiposBody);
+        }
+
+
 
         [HttpPut]
 

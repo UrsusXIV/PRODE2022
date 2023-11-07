@@ -6,4 +6,5 @@
 
         public string SedeNombre { get; set; }
     }
+
 }

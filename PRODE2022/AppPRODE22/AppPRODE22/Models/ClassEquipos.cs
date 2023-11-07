@@ -7,4 +7,7 @@
         public string EquipoNombre { get; set; }
 
     }
+
+
+
 }

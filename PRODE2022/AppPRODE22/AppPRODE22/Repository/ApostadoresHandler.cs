@@ -23,7 +23,7 @@ namespace AppPRODE22.Repository
                 {
                     sqlCommand.Parameters.Add(new SqlParameter("IDApostador", System.Data.SqlDbType.Int) { Value = altaApostadoresBody.IDApostador });
 
-                    sqlCommand.Parameters.Add(new SqlParameter("ApostPuntos", System.Data.SqlDbType.Int) { Value = altaApostadoresBody.AposPuntos });
+                    sqlCommand.Parameters.Add(new SqlParameter("ApostPuntos", System.Data.SqlDbType.Int) { Value = 0 }); // Se inicializa obligatoriamente en 0 en el alta.
 
                     sqlCommand.Parameters.Add(new SqlParameter("ApostMail", System.Data.SqlDbType.VarChar) { Value = altaApostadoresBody.ApostMail });
 
@@ -48,7 +48,7 @@ namespace AppPRODE22.Repository
 
         // ---------------------------------------------------------
 
-        public static List<GetApostadoresDTO> consultaApostadoresHandler(GetApostadoresDTO consultaApostadoresBody)
+       /* public static List<GetApostadoresDTO> consultaApostadoresHandler(GetApostadoresDTO consultaApostadoresBody)
         {
             List<GetApostadoresDTO> listaApostadores = new List<GetApostadoresDTO>();
 
@@ -105,7 +105,64 @@ namespace AppPRODE22.Repository
 
             return listaApostadores;
         }
+         */
 
+        public static ApostadoresResponse consultaApostadoresHandler(GetApostadoresDTO consultaApostadoresBody)
+        {
+            ApostadoresResponse response = new ApostadoresResponse();
+
+            response.Apostadores = new List<GetApostadoresDTO>();
+
+            using (SqlConnection sqlConnection = new SqlConnection(connectionString))
+            {
+                var SelectQuery = string.Empty;
+
+                if(consultaApostadoresBody.IDApostador == 0)
+                {
+                    SelectQuery = "SELECT IDApostador, ApostNombre, ApostPuntos, ApostMail FROM Apostadores";
+                }
+
+                else
+                {
+                    SelectQuery = "SELECT IDApostador, ApostNombre, ApostPuntos, ApostMail FROM Apostadores WHERE IDApostador = @IDApostador";
+                }
+
+                sqlConnection.Open();
+
+                using (SqlCommand sqlCommand = new SqlCommand(SelectQuery, sqlConnection))
+                {
+                    sqlCommand.Parameters.Add(new SqlParameter("IDApostador", System.Data.SqlDbType.Int) {Value = consultaApostadoresBody.IDApostador });
+                    
+                    using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
+                    {
+                        if (sqlDataReader.HasRows)
+                        {
+                            while (sqlDataReader.Read())
+                            {
+
+                                var apostadoresDTO = new GetApostadoresDTO();
+
+                                apostadoresDTO.IDApostador = Convert.ToInt32(sqlDataReader["IDApostador"]);
+
+                                apostadoresDTO.AposNombre = sqlDataReader["ApostNombre"].ToString();
+
+                                apostadoresDTO.AposPuntos = Convert.ToInt32(sqlDataReader["ApostPuntos"]);
+
+                                apostadoresDTO.ApostMail = sqlDataReader["ApostMail"].ToString();
+
+                                response.Apostadores.Add(apostadoresDTO);
+
+
+                            }
+                        }
+                    }
+                }
+
+                sqlConnection.Close();
+            }
+
+            return response;
+        }
         //----------------------------
 
         public static bool modificacionApostadoresHandler(PutApostadoresDTO modificacionApostadoresBody)
@@ -114,14 +171,16 @@ namespace AppPRODE22.Repository
             {
                 bool update = false;
 
-                var UpdateQuery = "UPDATE Apostadores SET ApostPuntos = @ApostPuntos WHERE IDApostador = @IDApostador";
+                var UpdateQuery = "UPDATE Apostadores SET ApostMail = @ApostMail, ApostNombre = @ApostNombre WHERE IDApostador = @IDApostador";
 
                 sqlConnection.Open();
 
                 using(SqlCommand sqlCommand = new SqlCommand(UpdateQuery, sqlConnection))
                 {
 
-                    sqlCommand.Parameters.Add(new SqlParameter("ApostPuntos", System.Data.SqlDbType.Int) { Value = modificacionApostadoresBody.AposPuntos });
+                    sqlCommand.Parameters.Add(new SqlParameter("ApostMail", System.Data.SqlDbType.VarChar) { Value = modificacionApostadoresBody.ApostMail});
+
+                    sqlCommand.Parameters.Add(new SqlParameter("ApostNombre", System.Data.SqlDbType.VarChar) { Value = modificacionApostadoresBody.AposNombre });
 
                     sqlCommand.Parameters.Add(new SqlParameter("IDApostador", System.Data.SqlDbType.Int) { Value = modificacionApostadoresBody.IDApostador });
 

@@ -3,7 +3,7 @@
     public class DeletePartidosGruposDTO
     {
         public int PartIDPartido { get; set; }
-
+        /*
         public int PartIDCompetencia { get; set; }
 
         public string PartGrupo { get; set; }
@@ -28,7 +28,7 @@
 
         public int PartPuntosV { get; set; }
 
-
+        */
 
     }
 }

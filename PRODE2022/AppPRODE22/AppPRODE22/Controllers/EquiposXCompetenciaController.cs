@@ -24,13 +24,21 @@ namespace AppPRODE22.Controllers
         
         
 
-        [HttpGet]
+        /*[HttpGet]
 
         // Si se le informa al backend el ID 0, devolvera todas las sedes, de otra forma, buscara la sede pedida.
         public List<GetEquiposXCompetenciaDTO> consultaEqpsXComp([FromBody] GetEquiposXCompetenciaDTO consultaEqpsXCompBody)
         {
 
             return EquiposXCompetenciaHandler.consultaEqpsXCompHandler(consultaEqpsXCompBody);
+        }
+        */
+
+        [HttpGet]
+
+        public EquiposXCompetenciaResponse consultaEquiposXCompetencia([FromQuery] GetEquiposXCompetenciaDTO consultaEquiposXCompetenciaBody)
+        {
+            return EquiposXCompetenciaHandler.consultaEquiposXCompetenciaHandler(consultaEquiposXCompetenciaBody);
         }
 
         [HttpPut]

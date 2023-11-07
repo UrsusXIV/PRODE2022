@@ -24,12 +24,18 @@ namespace AppPRODE22.Controllers
 
         [HttpGet]
 
+        public PartidosGruposResponse consultaPartidosGrupo([FromQuery] GetPartidosGruposDTO consultaPartidosGrupoBody)
+        {
+            return PartidosGrupoHandler.consultaPartidosGrupoHandler(consultaPartidosGrupoBody);
+        }
+
         // 
-        public List<GetPartidosGruposDTO> consultaPartidosGrupo([FromBody] GetPartidosGruposDTO consultaPartidosGrupoBody)
+       /* public List<GetPartidosGruposDTO> consultaPartidosGrupo([FromBody] GetPartidosGruposDTO consultaPartidosGrupoBody)
         {
 
             return PartidosGrupoHandler.consultaPartidosGrupoHandler(consultaPartidosGrupoBody);
         }
+       */
 
         /*
         [HttpPut]

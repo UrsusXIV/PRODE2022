@@ -22,13 +22,20 @@ namespace AppPRODE22.Controllers
         
         // ---------------------
 
-        [HttpGet]
+        /*[HttpGet]
 
         // Si se le informa al backend el ID 0, devolvera todas las competencias, de otra forma, buscara la competencia pedida.
         public List<GetCompetenciasDTO> consultaCompetencia([FromBody] GetCompetenciasDTO consultaCompetenciaBody)
         {
 
             return CompetenciaHandler.consultaCompetenciaHandler(consultaCompetenciaBody);
+        }
+        */
+
+        [HttpGet]
+        public CompetenciasResponse consultaCompetencias([FromQuery]GetCompetenciasDTO consultaCompetenciasBody)
+        {
+            return CompetenciaHandler.consultaCompetenciasHandler(consultaCompetenciasBody);
         }
 
         [HttpPut]

@@ -44,9 +44,10 @@ namespace AppPRODE22.Repository
 
         // ---------------------------------------------------------
 
-        public static List<GetSedeDTO> consultaSedeHandler(GetSedeDTO consultaSedeBody)
+        public static SedesResponse consultaSedeHandler(GetSedeDTO consultaSedeBody)
         {
-            List<GetSedeDTO> listaSedes = new List<GetSedeDTO>();
+            SedesResponse sedesResponse = new SedesResponse();
+            sedesResponse.Sede = new List<GetSedeDTO>();
 
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
@@ -84,7 +85,7 @@ namespace AppPRODE22.Repository
 
                                 sedeDTO.SedeNombre = sqlDataReader["SedeNombre"].ToString();
 
-                                listaSedes.Add(sedeDTO);
+                                sedesResponse.Sede.Add(sedeDTO);
 
                             }
 
@@ -97,7 +98,7 @@ namespace AppPRODE22.Repository
                 sqlConnection.Close();
             }
 
-            return listaSedes;
+            return sedesResponse;
         }
 
         //----------------------------

@@ -67,8 +67,86 @@ namespace AppPRODE22.Repository
         }
 
         // ---------------------------------------------------------
+        public static PartidosGruposResponse consultaPartidosGrupoHandler(GetPartidosGruposDTO consultaPartidosGrupoBody)
+        {
+            PartidosGruposResponse response = new PartidosGruposResponse();
 
-        public static List<GetPartidosGruposDTO> consultaPartidosGrupoHandler(GetPartidosGruposDTO consultaPartidosGrupoBody)
+            response.PartidosGrupos = new List<GetPartidosGruposDTO>();
+
+            using (SqlConnection sqlConnection = new SqlConnection(connectionString))
+            {
+                var SelectQuery = string.Empty;
+                    
+                    if(consultaPartidosGrupoBody.PartIDCompetencia != 0 && consultaPartidosGrupoBody.PartGrupo == "getall") // Improviso.
+                {
+                     SelectQuery = "SELECT PG.*, E1.EquipoNombre AS EquipoLocal,E2.EquipoNombre AS EquipoVisitante FROM PartidosGrupos AS PG INNER JOIN Equipos AS E1 ON PG.PartIDEquipoL = E1.IDEquipo INNER JOIN Equipos AS E2 ON PG.PartIDEquipoV = E2.IDEquipo WHERE PG.PartIDCompetencia = @PartIDCompetencia";
+                     
+                }
+
+                    else if(consultaPartidosGrupoBody.PartIDCompetencia != 0 && consultaPartidosGrupoBody.PartGrupo != string.Empty && consultaPartidosGrupoBody.PartGrupo != "getall")
+                {
+                     SelectQuery = "SELECT * FROM PartidosGrupos WHERE PartIDCompetencia = @PartIDCompetencia AND PartGrupo = @PartGrupo";
+                }
+
+                    else if (consultaPartidosGrupoBody.PartIDPartido != 0)
+                {
+                     SelectQuery = "SELECT * FROM PartidosGrupos WHERE IDPartido = @IDPartido";
+                }
+
+                sqlConnection.Open();
+
+                using (SqlCommand sqlCommand = new SqlCommand(SelectQuery, sqlConnection))
+                {
+                    sqlCommand.Parameters.Add(new SqlParameter("IDPartido", System.Data.SqlDbType.Int) { Value = consultaPartidosGrupoBody.PartIDPartido });
+
+                    sqlCommand.Parameters.Add(new SqlParameter("PartIDCompetencia", System.Data.SqlDbType.Int) { Value = consultaPartidosGrupoBody.PartIDCompetencia });
+
+                    sqlCommand.Parameters.Add(new SqlParameter("PartGrupo", System.Data.SqlDbType.VarChar) { Value = consultaPartidosGrupoBody.PartGrupo });
+
+                    using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
+                    {
+
+                        if (sqlDataReader.HasRows)
+                        {
+
+                            while (sqlDataReader.Read())
+                            {
+
+                                var partidosgruposDTO = new GetPartidosGruposDTO();
+
+                                partidosgruposDTO.PartIDEstado = Convert.ToInt32(sqlDataReader["PartIDEstado"]);
+
+                                partidosgruposDTO.PartIDCompetencia = Convert.ToInt32(sqlDataReader["PartIDCompetencia"]);
+
+                                partidosgruposDTO.PartIDPartido = Convert.ToInt32(sqlDataReader["IDPartido"]);
+
+                                partidosgruposDTO.PartIDSede = Convert.ToInt32(sqlDataReader["PartIDSede"]);
+
+                                partidosgruposDTO.PartIDEquipoL = Convert.ToInt32(sqlDataReader["PartIDEquipoL"]);
+
+                                partidosgruposDTO.PartIDEquipoV = Convert.ToInt32(sqlDataReader["PartIDEquipoV"]);
+
+                                partidosgruposDTO.PartGolesL = Convert.ToInt32(sqlDataReader["PartGolesL"]);
+
+                                partidosgruposDTO.PartGolesV = Convert.ToInt32(sqlDataReader["PartGolesV"]);
+
+                                partidosgruposDTO.PartGrupo = sqlDataReader["PartGrupo"].ToString();
+
+                                partidosgruposDTO.EquipoLNombre = sqlDataReader["EquipoLocal"].ToString();
+
+                                partidosgruposDTO.EquipoVNombre = sqlDataReader["EquipoVisitante"].ToString();
+
+                                response.PartidosGrupos.Add(partidosgruposDTO);
+                            }
+                        }
+                    }
+                }
+                sqlConnection.Close();
+            }
+
+            return response;
+        }
+        /*public static List<GetPartidosGruposDTO> consultaPartidosGrupoHandler(GetPartidosGruposDTO consultaPartidosGrupoBody)
         {
             List<GetPartidosGruposDTO> listaPartidosGrupo = new List<GetPartidosGruposDTO>();
 
@@ -139,7 +217,7 @@ namespace AppPRODE22.Repository
 
             return listaPartidosGrupo;
         }
-
+        */
         //----------------------------
 
 

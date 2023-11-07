@@ -44,7 +44,8 @@ namespace AppPRODE22.Repository
 
         // ----------------------POST FIXED.-----------------------------------
 
-        public static List<GetEquipoDTO> consultaEquiposHandler(GetEquipoDTO consultaEquipoBody)
+        // Comento el método original al intentar crear uno nuevo que devuelva un array.
+        /*public static List<GetEquipoDTO> consultaEquiposHandler(GetEquipoDTO consultaEquipoBody)
         {
             List<GetEquipoDTO> listaEquipos = new List<GetEquipoDTO>();
 
@@ -99,6 +100,59 @@ namespace AppPRODE22.Repository
 
             return listaEquipos;
         }
+        */
+
+
+        // Nuevo metodo GET para devolver un array.
+
+        public static EquiposResponse consultaEquiposHandler(GetEquipoDTO consultaEquipoBody)
+        {
+            EquiposResponse response = new EquiposResponse();
+            response.Equipos = new List<GetEquipoDTO>();
+
+            using (SqlConnection sqlConnection = new SqlConnection(connectionString))
+            {
+                var SelectQuery = string.Empty;
+
+                if (consultaEquipoBody.IdEquipo == 0)
+                {
+                    SelectQuery = "SELECT * FROM Equipos";
+                }
+                else
+                {
+                    SelectQuery = "SELECT * FROM Equipos WHERE IDEquipo = @IDEquipo";
+                }
+
+                sqlConnection.Open();
+
+                using (SqlCommand sqlCommand = new SqlCommand(SelectQuery, sqlConnection))
+                {
+                    sqlCommand.Parameters.Add(new SqlParameter("IDEquipo", System.Data.SqlDbType.Int) { Value = consultaEquipoBody.IdEquipo });
+
+                    using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
+                    {
+                        if (sqlDataReader.HasRows)
+                        {
+                            while (sqlDataReader.Read())
+                            {
+                                var equipoDTO = new GetEquipoDTO();
+
+                                equipoDTO.IdEquipo = Convert.ToInt32(sqlDataReader["IdEquipo"]);
+
+                                equipoDTO.EquipoNombre = sqlDataReader["EquipoNombre"].ToString();
+
+                                response.Equipos.Add(equipoDTO);
+                            }
+                        }
+                    }
+                }
+
+                sqlConnection.Close();
+            }
+
+            return response;
+        }
+
 
         //----------------------------
 

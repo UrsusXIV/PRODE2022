@@ -19,15 +19,22 @@ namespace AppPRODE22.Controllers
             return ApostadoresHandler.altaApostadoresHandler(altaApostadoresBody);
 
         }
-        
+
         // ---------------------
 
+
+
+
+        /* public List<GetApostadoresDTO> consultaApostadores([FromBody] GetApostadoresDTO consultaApostadoresBody)
+         {
+
+             return ApostadoresHandler.consultaApostadoresHandler(consultaApostadoresBody);
+         }
+        */
+
         [HttpGet]
-
-        
-        public List<GetApostadoresDTO> consultaApostadores([FromBody] GetApostadoresDTO consultaApostadoresBody)
+        public ApostadoresResponse consultaApostadorse([FromQuery] GetApostadoresDTO consultaApostadoresBody)
         {
-
             return ApostadoresHandler.consultaApostadoresHandler(consultaApostadoresBody);
         }
 

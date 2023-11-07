@@ -16,7 +16,7 @@
 
         public DateTime PartFechaDate { get; set; }
 
-        public DateTime PartHoraTime { get; set; }
+        public TimeSpan PartHoraTime { get; set; }
 
         public int PartIDEstado { get; set; }
 

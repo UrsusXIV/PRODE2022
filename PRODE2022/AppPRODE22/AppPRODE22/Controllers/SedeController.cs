@@ -25,7 +25,7 @@ namespace AppPRODE22.Controllers
         [HttpGet]
 
         // Si se le informa al backend el ID 0, devolvera todas las sedes, de otra forma, buscara la sede pedida.
-        public List<GetSedeDTO> consultaSede([FromBody] GetSedeDTO consultaSedeBody)
+        public SedesResponse consultaSede([FromQuery] GetSedeDTO consultaSedeBody)
         {
 
             return SedeHandler.consultaSedeHandler(consultaSedeBody);

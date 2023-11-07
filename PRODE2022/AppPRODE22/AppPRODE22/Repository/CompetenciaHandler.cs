@@ -44,7 +44,7 @@ namespace AppPRODE22.Repository
 
         // ---------------------------------------------------------
 
-        public static List<GetCompetenciasDTO> consultaCompetenciaHandler(GetCompetenciasDTO consultaCompetenciaBody)
+        /*public static List<GetCompetenciasDTO> consultaCompetenciaHandler(GetCompetenciasDTO consultaCompetenciaBody)
         {
             List<GetCompetenciasDTO> listaCompetencias = new List<GetCompetenciasDTO>();
 
@@ -98,6 +98,55 @@ namespace AppPRODE22.Repository
             }
 
             return listaCompetencias;
+        }
+        */
+
+        public static CompetenciasResponse consultaCompetenciasHandler(GetCompetenciasDTO consultaCompetenciasBody)
+        {
+            CompetenciasResponse response = new CompetenciasResponse();
+
+            response.Competencias = new List<GetCompetenciasDTO>();
+
+            using (SqlConnection sqlConnection = new SqlConnection(connectionString))
+            {
+                var SelectQuery = string.Empty;
+
+                if(consultaCompetenciasBody.IDCompetencia == 0)
+                {
+                    SelectQuery = "SELECT * FROM Competencia";
+                }
+                else
+                {
+                    SelectQuery = "SELECT * FROM Competencia WHERE IDCompetencia = @IDCompetencia";
+                }
+                sqlConnection.Open();
+
+                using (SqlCommand sqlCommand = new SqlCommand(SelectQuery, sqlConnection))
+                {
+                    sqlCommand.Parameters.Add(new SqlParameter("IDCompetencia", System.Data.SqlDbType.Int) { Value = consultaCompetenciasBody.IDCompetencia });
+
+                    using(SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
+                    {
+                        if(sqlDataReader.HasRows)
+                        {
+                            while (sqlDataReader.Read())
+                            {
+                                var competenciasDTO = new GetCompetenciasDTO();
+
+                                competenciasDTO.IDCompetencia = Convert.ToInt32(sqlDataReader["IDCompetencia"]);
+
+                                competenciasDTO.CompetenciaNombre = sqlDataReader["CompetenciaNombre"].ToString();
+
+                                response.Competencias.Add(competenciasDTO);
+                            }
+                        }
+                    }
+                }
+
+                sqlConnection.Close();
+            }
+
+            return response;
         }
 
         //----------------------------
