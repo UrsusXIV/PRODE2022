@@ -2,7 +2,7 @@
 {
     public class PostPartidosGruposDTO
     {
-        public int PartIDPartido { get; set; }
+        //public int PartIDPartido { get; set; }
 
         public int PartIDCompetencia { get; set; }
 

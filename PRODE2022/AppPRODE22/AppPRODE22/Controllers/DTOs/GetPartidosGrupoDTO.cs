@@ -15,9 +15,9 @@
 
         public int PartIDSede { get; set; }
 
-        public DateTime PartFechaDate { get; set; }
+        public string PartFechaDate { get; set; } = "";
 
-        public TimeSpan PartHoraTime { get; set; }
+        public string PartHoraTime { get; set; } = "";
 
         public int PartIDEstado { get; set; }
 

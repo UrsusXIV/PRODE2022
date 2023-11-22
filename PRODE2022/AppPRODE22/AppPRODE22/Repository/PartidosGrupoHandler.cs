@@ -13,6 +13,9 @@ namespace AppPRODE22.Repository
         // Metodo para dar de alta a las sedes.-
         public static bool altaPartidosGrupoHandler(PostPartidosGruposDTO altaPartidosGrupoBody)
         {
+
+            int IDPartidoMax = ObtenerMaxIDPartido();
+
             bool insert = false;
 
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
@@ -23,7 +26,7 @@ namespace AppPRODE22.Repository
 
                 using (SqlCommand sqlCommand = new SqlCommand(InsertQuery, sqlConnection))
                 {
-                    sqlCommand.Parameters.Add(new SqlParameter("IDPartido", System.Data.SqlDbType.Int) { Value = altaPartidosGrupoBody.PartIDPartido });
+                    sqlCommand.Parameters.Add(new SqlParameter("IDPartido", System.Data.SqlDbType.Int) { Value = IDPartidoMax+1 });
 
                     sqlCommand.Parameters.Add(new SqlParameter("PartIDCompetencia", System.Data.SqlDbType.Int) { Value = altaPartidosGrupoBody.PartIDCompetencia });
 
@@ -65,6 +68,38 @@ namespace AppPRODE22.Repository
                 return insert;
             }
         }
+
+
+        public static int ObtenerMaxIDPartido()
+        {
+            int IDPartidoMax = 0; // Valor Maximo de los IDPartido
+
+            using (SqlConnection sqlConnection = new SqlConnection(connectionString))
+            {
+                var SelectQuery = "SELECT MAX(IDPartido) AS ValorMax FROM PartidosGrupos";
+
+                sqlConnection.Open();
+
+                using (SqlCommand sqlCommand = new SqlCommand(SelectQuery, sqlConnection))
+                {
+                    using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
+                    {
+                        if (sqlDataReader.Read())
+                        {
+                            if (!sqlDataReader.IsDBNull(sqlDataReader.GetOrdinal("ValorMax")))
+                            {
+                                IDPartidoMax = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("ValorMax"));
+                            }
+                        }
+                    }
+                }
+
+                sqlConnection.Close();
+            }
+
+            return IDPartidoMax;
+        }
+
 
         // ---------------------------------------------------------
         public static PartidosGruposResponse consultaPartidosGrupoHandler(GetPartidosGruposDTO consultaPartidosGrupoBody)
@@ -136,6 +171,10 @@ namespace AppPRODE22.Repository
 
                                 partidosgruposDTO.EquipoVNombre = sqlDataReader["EquipoVisitante"].ToString();
 
+                                partidosgruposDTO.PartHoraTime = sqlDataReader["PartHora"].ToString();
+
+                                partidosgruposDTO.PartFechaDate = sqlDataReader["PartFecha"].ToString();
+
                                 response.PartidosGrupos.Add(partidosgruposDTO);
                             }
                         }
@@ -146,6 +185,8 @@ namespace AppPRODE22.Repository
 
             return response;
         }
+
+
         /*public static List<GetPartidosGruposDTO> consultaPartidosGrupoHandler(GetPartidosGruposDTO consultaPartidosGrupoBody)
         {
             List<GetPartidosGruposDTO> listaPartidosGrupo = new List<GetPartidosGruposDTO>();

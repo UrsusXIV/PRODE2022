@@ -29,4 +29,9 @@
     {
         public List<Controllers.DTOs.GetPartidosGruposDTO> PartidosGrupos { get; set; }
     }
+
+    public class GrupoApuestasResponse
+    {
+        public List<Controllers.DTOs.GetGruposApuestasDTO> GrupoApuestas { get; set; }
+    }
 }

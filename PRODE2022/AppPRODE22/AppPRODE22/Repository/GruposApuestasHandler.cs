@@ -44,6 +44,7 @@ namespace AppPRODE22.Repository
 
         // ---------------------------------------------------------
 
+        /*
         public static List<GetGruposApuestasDTO> consultaGruposApuestasHandler(GetGruposApuestasDTO consultaGruposApuestasBody)
         {
             List<GetGruposApuestasDTO> listaGruposAp = new List<GetGruposApuestasDTO>();
@@ -98,6 +99,63 @@ namespace AppPRODE22.Repository
             }
 
             return listaGruposAp;
+        }
+
+        */
+
+        public static GrupoApuestasResponse consultaGruposApuestasHandler(GetGruposApuestasDTO consultaGruposApuestasQuery)
+        {
+            GrupoApuestasResponse response = new GrupoApuestasResponse();
+
+            response.GrupoApuestas = new List<GetGruposApuestasDTO>();
+
+            using (SqlConnection sqlConnection = new SqlConnection(connectionString))
+            {
+                var SelectQuery = string.Empty;
+
+                if(consultaGruposApuestasQuery.IDGruposAp == 0)
+                {
+                    SelectQuery = "SELECT * FROM GrupoApuestas";
+                }
+
+                if(consultaGruposApuestasQuery.IDGruposAp < 0) // Validacion para prevenir numeros negativos. 
+                {
+                    consultaGruposApuestasQuery.IDGruposAp = 0;
+
+                    SelectQuery = "SELECT * FROM GrupoApuestas";
+                }
+
+                if(consultaGruposApuestasQuery.IDGruposAp > 0)
+                {
+                    SelectQuery = "SELECT GrupoApuestas.IDGruposAp, GrupoApuestas.GruposApDescripcion FROM GrupoApuestas WHERE IDGruposAp = @IDGruposAp";
+                }
+
+                sqlConnection.Open();
+
+                using(SqlCommand sqlCommand = new SqlCommand(SelectQuery, sqlConnection))
+                {
+                    sqlCommand.Parameters.Add(new SqlParameter("IDGruposAp", System.Data.SqlDbType.Int) { Value = consultaGruposApuestasQuery.IDGruposAp });
+
+                    using(SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
+                    {
+                        if (sqlDataReader.HasRows)
+                        {
+                            while (sqlDataReader.Read())
+                            {
+                                var gruposApuestasDTO = new GetGruposApuestasDTO();
+
+                                gruposApuestasDTO.IDGruposAp = Convert.ToInt32(sqlDataReader["IDGruposAp"]);
+
+                                gruposApuestasDTO.GrupoApDescripcion = sqlDataReader["GruposApDescripcion"].ToString();
+
+                                response.GrupoApuestas.Add(gruposApuestasDTO);
+                            }
+                        }
+                    }
+                }
+                sqlConnection.Close();
+            }
+            return response;
         }
 
         //----------------------------

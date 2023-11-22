@@ -19,14 +19,25 @@ namespace AppPRODE22.Controllers
             return GruposApuestasHandler.altaGruposApuestasHandler(altaGruposApuestasBody);
 
         }
-        
+
         // ---------------------
 
+        /*
         [HttpGet]        
         public List<GetGruposApuestasDTO> consultaGruposApuestas([FromBody] GetGruposApuestasDTO consultaGruposApuestasBody)
         {
 
             return GruposApuestasHandler.consultaGruposApuestasHandler(consultaGruposApuestasBody);
+        }
+
+        
+        */
+
+        [HttpGet]
+
+        public GrupoApuestasResponse consultaGrupoApuestas([FromQuery] GetGruposApuestasDTO consultaGrupoApuestasQuery)
+        {
+            return GruposApuestasHandler.consultaGruposApuestasHandler(consultaGrupoApuestasQuery);
         }
 
         [HttpPut]

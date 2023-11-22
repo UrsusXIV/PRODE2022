@@ -4,7 +4,7 @@
     {
         public int IDGruposAp { get; set; }
 
-        public string GrupoApDescripcion { get; set; }
+        public string GrupoApDescripcion { get; set; } = "";
 
     }
 }
