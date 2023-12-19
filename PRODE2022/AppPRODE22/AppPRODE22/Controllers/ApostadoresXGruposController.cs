@@ -19,9 +19,10 @@ namespace AppPRODE22.Controllers
             return ApostadoresXGrupoHandler.altaApostadoresXGrupoHandler(altaApostadoresXGrupoBody);
 
         }
-        
+
         // ---------------------
 
+        /*
         [HttpGet]
 
         // Si se le informa al backend el ID 0, devolvera todas las sedes, de otra forma, buscara la sede pedida.
@@ -30,7 +31,14 @@ namespace AppPRODE22.Controllers
 
             return ApostadoresXGrupoHandler.consultaApostadoresXGrupoHandler(consultaApostadoresXGrupoBody);
         }
+        */
 
+        [HttpGet]
+
+        public ApostadoresXGrupoResponse consultaApostadoresXGrupo([FromQuery] GetApostadoresXGrupo consultaApostadoresXGrupoQuery)
+        {
+            return ApostadoresXGrupoHandler.consultaApostadoresXGrupoHandler(consultaApostadoresXGrupoQuery);
+        }
 
         [HttpDelete]
 
