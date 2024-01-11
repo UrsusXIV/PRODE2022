@@ -261,6 +261,37 @@ namespace AppPRODE22.Repository
         */
         //----------------------------
 
+        public static bool modificacionPartidosGrupoHandler(PutPartidosGruposDTO modificacionPartidosGruposBody)
+        {
+            using (SqlConnection sqlConnection = new SqlConnection(connectionString))
+            {
+                bool update = false;
+
+                var UpdateQuery = "UPDATE PartidosGrupos SET PartIDEstado = @PartIDEstado, PartGolesL = @PartGolesL, PartGolesV = @PartGolesV, PartPuntosL = @PartPuntosL, PartPuntosV = @PartPuntosV WHERE IDPartido = @IDPartido";
+
+                sqlConnection.Open();
+
+                using(SqlCommand sqlCommand = new SqlCommand(UpdateQuery, sqlConnection))
+                {
+                    sqlCommand.Parameters.Add(new SqlParameter("PartIDEstado", System.Data.SqlDbType.Int){ Value = modificacionPartidosGruposBody.PartIDEstado });
+                    sqlCommand.Parameters.Add(new SqlParameter("PartGolesL", System.Data.SqlDbType.Int){ Value = modificacionPartidosGruposBody.PartGolesL });
+                    sqlCommand.Parameters.Add(new SqlParameter("PartGolesV", System.Data.SqlDbType.Int){ Value = modificacionPartidosGruposBody.PartGolesV });
+                    sqlCommand.Parameters.Add(new SqlParameter("PartPuntosL", System.Data.SqlDbType.Int) { Value = modificacionPartidosGruposBody.PartPuntosL });
+                    sqlCommand.Parameters.Add(new SqlParameter("PartPuntosV", System.Data.SqlDbType.Int) { Value = modificacionPartidosGruposBody.PartPuntosV });
+                    sqlCommand.Parameters.Add(new SqlParameter("IDPartido", System.Data.SqlDbType.Int) { Value = modificacionPartidosGruposBody.PartIDPartido });
+
+                    int numberOfRows = sqlCommand.ExecuteNonQuery();
+
+                    if(numberOfRows > 0)
+                    {
+                        update = true;
+
+                    }
+                }
+                sqlConnection.Close();
+                return update;
+            }
+        }
 
         public static bool bajaPartidosGrupoHandler(DeletePartidosGruposDTO bajaPartidosGrupoBody)
         {

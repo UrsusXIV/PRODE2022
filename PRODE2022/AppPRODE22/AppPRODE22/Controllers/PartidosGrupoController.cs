@@ -37,7 +37,6 @@ namespace AppPRODE22.Controllers
         }
        */
 
-        /*
         [HttpPut]
 
          public bool modificacionPartidosGrupo([FromBody]PutPartidosGruposDTO modificacionPartidosGrupoBody)
@@ -46,7 +45,7 @@ namespace AppPRODE22.Controllers
              return PartidosGrupoHandler.modificacionPartidosGrupoHandler(modificacionPartidosGrupoBody);
 
          }
-        */
+
         [HttpDelete]
 
         public bool bajaPartidosGrupo([FromBody]DeletePartidosGruposDTO bajaPartidosGrupoBody)
