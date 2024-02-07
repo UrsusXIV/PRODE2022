@@ -23,20 +23,20 @@ namespace AppPRODE22.Controllers
             return ApuestasHandler.consultaApuestasHandler(consultaApuestasQuery);
         }
 
-        /*
+        
         [HttpPut]
         
         public bool modificacionApuestas([FromBody] PutApuestasDTO modificacionesApuestasBody)
         {
-            return ApuestasHandler.modificacionApuestasHandler(modificacionesApuestasBody)
+            return ApuestasHandler.modificacionApuestasHandler(modificacionesApuestasBody);
         }
-
+        
         [HttpDelete]
 
         public bool bajaApuestas([FromBody]DeleteApuestasDTO bajaApuestasBody)
         {
-            return ApuestasHandler.bajaApuestasHandler(bajaApuestasBody)
+            return ApuestasHandler.bajaApuestasHandler(bajaApuestasBody);
         }
-        */
+        
     }
 }

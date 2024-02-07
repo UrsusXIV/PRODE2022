@@ -2,16 +2,16 @@
 {
     public class GetApuestasDTO
     {
-        public int PartIDPartido { get; set; }
+        public int ApIDPartido { get; set; }
 
-        public int PartIDCompetencia { get; set; }
+        public int? ApIDCompetencia { get; set; } = null;
 
-        public int PartIDEquipoL { get; set; }
+        public int? ApIDApostador { get; set; } = null;
 
-        public int PartIDEquipoV { get; set; }
+        public int ApIDEquipoL { get; set; }
 
-        public int PartIDEstado { get; set; } = 0;
-        
+        public int ApIDEquipoV { get; set; }
+     
         public string EquipoLNombre { get; set; } = "";
 
         public string EquipoVNombre { get; set; } = "";

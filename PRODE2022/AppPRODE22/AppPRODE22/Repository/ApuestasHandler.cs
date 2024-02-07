@@ -57,9 +57,17 @@ namespace AppPRODE22.Repository
             {
                 var SelectQuery = string.Empty;
 
-                if (consultaApuestasQuery.PartIDCompetencia == 0)
+                if (consultaApuestasQuery.ApIDApostador != null && consultaApuestasQuery.ApIDCompetencia != null )
                 {
-                    SelectQuery = "";
+                    SelectQuery = @"
+                    SELECT Apuestas.*, 
+                    PartidosGrupos.PartIDEquipoL AS EquipoLocalID, Equipos.EquipoNombre AS EquipoLocalNombre, 
+                    PartidosGrupos.PartIDEquipoV AS EquipoVisitanteID, Equipos_1.EquipoNombre AS EquipoVisitanteNombre
+                    FROM Apuestas
+                    INNER JOIN PartidosGrupos ON Apuestas.ApIDPartido = PartidosGrupos.IDPartido
+                    INNER JOIN Equipos ON PartidosGrupos.PartIDEquipoL = Equipos.IDEquipo
+                    INNER JOIN Equipos AS Equipos_1 ON PartidosGrupos.PartIDEquipoV = Equipos_1.IDEquipo
+                    WHERE Apuestas.ApIDApostador = @ApostadorID AND Apuestas.ApIDCompetencia = @CompetenciaID";
 
                 }
 
@@ -67,7 +75,7 @@ namespace AppPRODE22.Repository
 
                 using (SqlCommand sqlCommand = new SqlCommand(SelectQuery, sqlConnection))
                 {
-                    sqlCommand.Parameters.Add(new SqlParameter("PartIDCompetencia", System.Data.SqlDbType.Int) { Value = consultaApuestasQuery.PartIDCompetencia });
+                    sqlCommand.Parameters.Add(new SqlParameter("ApostadorID", System.Data.SqlDbType.Int) { Value = consultaApuestasQuery.ApIDApostador });
                 
                     using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
                     {
@@ -77,13 +85,13 @@ namespace AppPRODE22.Repository
                             {
                                 var apuestasDTO = new GetApuestasDTO();
 
-                                apuestasDTO.PartIDPartido = Convert.ToInt32(sqlDataReader["PartIDPartido"]);
+                                apuestasDTO.ApIDPartido = Convert.ToInt32(sqlDataReader["ApIDPartido"]);
 
-                                apuestasDTO.PartIDCompetencia = Convert.ToInt32(sqlDataReader["PartIDCompetencia"]);
+                                apuestasDTO.ApIDCompetencia = Convert.ToInt32(sqlDataReader["ApIDCompetencia"]);
 
-                                apuestasDTO.PartIDEquipoL = Convert.ToInt32(sqlDataReader["PartIDEquipoL"]);
+                                apuestasDTO.ApIDEquipoL = Convert.ToInt32(sqlDataReader["EquipoLocalID"]);
 
-                                apuestasDTO.PartIDEquipoV = Convert.ToInt32(sqlDataReader["PartIDEquipoV"]);
+                                apuestasDTO.ApIDEquipoV = Convert.ToInt32(sqlDataReader["EquipoVisitanteID"]);
 
                                 apuestasDTO.ApGolesL = Convert.ToInt32(sqlDataReader["ApGolesL"]);
 
@@ -91,18 +99,135 @@ namespace AppPRODE22.Repository
 
                                 apuestasDTO.ApPuntosObtenidos = Convert.ToInt32(sqlDataReader["ApPuntosObtenidos"]);
 
-                                apuestasDTO.EquipoLNombre = sqlDataReader["EquipoLocal"].ToString();
+                                apuestasDTO.EquipoLNombre = sqlDataReader["EquipoLocalNombre"].ToString();
 
-                                apuestasDTO.EquipoVNombre = sqlDataReader["EquipoVisitante"].ToString();
+                                apuestasDTO.EquipoVNombre = sqlDataReader["EquipoVisitanteNombre"].ToString();
 
                                 response.Apuestas.Add(apuestasDTO);
                             }
                         }
+                        else
+                        {
+                            sqlConnection.Close();
+                            
+                            if(consultaApuestasQuery.ApIDCompetencia != null)
+                            {
+                                SelectQuery = @"SELECT PG.IDPartido, PartIDCompetencia,PartIDEquipoL, PartIDEquipoV, PartGolesL, PartGolesV, E1.EquipoNombre AS EquipoLocal,E2.EquipoNombre AS EquipoVisitante 
+                                            FROM PartidosGrupos AS PG 
+                                            INNER JOIN Equipos AS E1 ON PG.PartIDEquipoL = E1.IDEquipo 
+                                            INNER JOIN Equipos AS E2 ON PG.PartIDEquipoV = E2.IDEquipo 
+                                            WHERE PG.PartIDCompetencia = 1";
+                            }
+
+                            sqlConnection.Open();
+
+                            using (SqlCommand altSqlCommand = new SqlCommand(SelectQuery, sqlConnection))
+                            {
+                                sqlCommand.Parameters.Add(new SqlParameter("ApostadorID", System.Data.SqlDbType.Int) { Value = consultaApuestasQuery.ApIDApostador });
+
+                                using (SqlDataReader altSqlDataReader = altSqlCommand.ExecuteReader())
+                                {
+                                    if (altSqlDataReader.HasRows)
+                                    {
+                                        while (altSqlDataReader.Read())
+                                        {
+                                            var apuestasDTO = new GetApuestasDTO();
+
+                                            apuestasDTO.ApIDPartido = Convert.ToInt32(altSqlDataReader["IDPartido"]);
+
+                                            apuestasDTO.ApIDCompetencia = Convert.ToInt32(altSqlDataReader["PartIDCompetencia"]);
+
+                                            apuestasDTO.ApIDEquipoL = Convert.ToInt32(altSqlDataReader["PartIDEquipoL"]);
+
+                                            apuestasDTO.ApIDEquipoV = Convert.ToInt32(altSqlDataReader["PartIDEquipoV"]);
+
+                                            apuestasDTO.ApGolesL = Convert.ToInt32(altSqlDataReader["PartGolesL"]);
+
+                                            apuestasDTO.ApGolesV = Convert.ToInt32(altSqlDataReader["PartGolesV"]);
+
+                                            if (apuestasDTO.ApGolesL != 0 && apuestasDTO.ApGolesV != 0)
+                                            {
+                                                apuestasDTO.ApGolesL = 0;
+                                                apuestasDTO.ApGolesV = 0;
+                                            }
+
+                                            apuestasDTO.EquipoLNombre = altSqlDataReader["EquipoLocal"].ToString();
+
+                                            apuestasDTO.EquipoVNombre = altSqlDataReader["EquipoVisitante"].ToString();
+
+                                            response.Apuestas.Add(apuestasDTO);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
                     }
                 }
                 sqlConnection.Close();
             }
             return response;
         }
+
+        public static bool modificacionApuestasHandler(PutApuestasDTO modificacionApuestasBody)
+        {
+            using (SqlConnection sqlConnection = new SqlConnection(connectionString))
+            {
+                bool update = false;
+
+                var UpdateQuery = @"UPDATE Apuestas 
+                                    SET ApGolesL = @ApGolesL, ApGolesV = @ApGolesV
+                                    WHERE ApIDPartido = @ApIDPartido AND ApIDApostador = @ApIDApostador";
+                
+                sqlConnection.Open();
+
+                using(SqlCommand sqlCommand = new SqlCommand(UpdateQuery, sqlConnection))
+                {
+                    sqlCommand.Parameters.Add(new SqlParameter("ApGolesL", System.Data.SqlDbType.Int) { Value = modificacionApuestasBody.ApGolesL });
+                    sqlCommand.Parameters.Add(new SqlParameter("ApGolesV", System.Data.SqlDbType.Int) { Value = modificacionApuestasBody.ApGolesV });
+
+                    int numberOfRows = sqlCommand.ExecuteNonQuery();
+
+                    if(numberOfRows > 0)
+                    {
+                        update = true;
+                    }
+                }
+
+                sqlConnection.Close();
+                return update;
+            }
+        }
+
+        public static bool bajaApuestasHandler(DeleteApuestasDTO bajaApuestasDTO)
+        {
+            using(SqlConnection sqlConnection = new SqlConnection(connectionString))
+            {
+                bool delete = false;
+
+                var DeleteQuery = @"DELETE FROM Apuestas
+                                    WHERE ApIDPartido = @ApIDPartido AND ApIDApostador = ApIDApostador";
+
+                sqlConnection.Open();                
+
+                using(SqlCommand sqlCommand = new SqlCommand(DeleteQuery, sqlConnection))
+                {
+                    sqlCommand.Parameters.Add(new SqlParameter("ApIDApostador", System.Data.SqlDbType.Int) { Value = bajaApuestasDTO.ApIDApostador });
+                    sqlCommand.Parameters.Add(new SqlParameter("ApIDPartido", System.Data.SqlDbType.Int) { Value = bajaApuestasDTO.ApIDPartido });
+                    
+                    int numberOfRows = sqlCommand.ExecuteNonQuery();
+
+                    if (numberOfRows > 0)
+                    {
+                        delete = true;
+                    }
+                }
+                sqlConnection.Close();
+
+                return delete;
+            }
+
+        }
+
     }
 }
