@@ -21,5 +21,9 @@
         public int ApGolesV { get; set; } = 0;
 
         public int ApPuntosObtenidos { get; set; } = 0;
+
+        public int PartIDEstado { get; set; } = 0;
+
+        public bool tieneApuesta { get; set; } = false;
     }
 }

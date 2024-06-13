@@ -1165,24 +1165,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\sebis\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\Nestor\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\sebis\\Documents\\GitHub\\PRODE2022\\PRODE2022\\AppPRODE22\\AppPRODE22\\AppPRODE22.csproj",
+      "projectUniqueName": "C:\\Users\\Nestor\\Documents\\GitHub\\PRODE2022\\PRODE2022\\AppPRODE22\\AppPRODE22\\AppPRODE22.csproj",
       "projectName": "AppPRODE22",
-      "projectPath": "C:\\Users\\sebis\\Documents\\GitHub\\PRODE2022\\PRODE2022\\AppPRODE22\\AppPRODE22\\AppPRODE22.csproj",
-      "packagesPath": "C:\\Users\\sebis\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\sebis\\Documents\\GitHub\\PRODE2022\\PRODE2022\\AppPRODE22\\AppPRODE22\\obj\\",
+      "projectPath": "C:\\Users\\Nestor\\Documents\\GitHub\\PRODE2022\\PRODE2022\\AppPRODE22\\AppPRODE22\\AppPRODE22.csproj",
+      "packagesPath": "C:\\Users\\Nestor\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Nestor\\Documents\\GitHub\\PRODE2022\\PRODE2022\\AppPRODE22\\AppPRODE22\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\sebis\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Users\\Nestor\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -1239,7 +1234,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.101\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.301\\RuntimeIdentifierGraph.json"
       }
     }
   }

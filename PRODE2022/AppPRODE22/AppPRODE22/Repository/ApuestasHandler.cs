@@ -57,30 +57,33 @@ namespace AppPRODE22.Repository
             {
                 var SelectQuery = string.Empty;
 
-                if (consultaApuestasQuery.ApIDApostador != null && consultaApuestasQuery.ApIDCompetencia != null )
-                {
+                if (consultaApuestasQuery.ApIDApostador != null && consultaApuestasQuery.ApIDCompetencia != null ) 
+                { // Se parte de la premisa que puede haber apuestas para el Apostador y Competencia
                     SelectQuery = @"
                     SELECT Apuestas.*, 
                     PartidosGrupos.PartIDEquipoL AS EquipoLocalID, Equipos.EquipoNombre AS EquipoLocalNombre, 
-                    PartidosGrupos.PartIDEquipoV AS EquipoVisitanteID, Equipos_1.EquipoNombre AS EquipoVisitanteNombre
+                    PartidosGrupos.PartIDEquipoV AS EquipoVisitanteID, Equipos_1.EquipoNombre AS EquipoVisitanteNombre,
+                    PartidosGrupos.PartIDEstado
                     FROM Apuestas
                     INNER JOIN PartidosGrupos ON Apuestas.ApIDPartido = PartidosGrupos.IDPartido
                     INNER JOIN Equipos ON PartidosGrupos.PartIDEquipoL = Equipos.IDEquipo
                     INNER JOIN Equipos AS Equipos_1 ON PartidosGrupos.PartIDEquipoV = Equipos_1.IDEquipo
-                    WHERE Apuestas.ApIDApostador = @ApostadorID AND Apuestas.ApIDCompetencia = @CompetenciaID";
+                    WHERE Apuestas.ApIDApostador = @ApIDApostador AND Apuestas.ApIDCompetencia = @ApIDCompetencia";
 
-                }
+                } 
 
                 sqlConnection.Open();
 
                 using (SqlCommand sqlCommand = new SqlCommand(SelectQuery, sqlConnection))
                 {
-                    sqlCommand.Parameters.Add(new SqlParameter("ApostadorID", System.Data.SqlDbType.Int) { Value = consultaApuestasQuery.ApIDApostador });
+                    sqlCommand.Parameters.Add(new SqlParameter("ApIDApostador", System.Data.SqlDbType.Int) { Value = consultaApuestasQuery.ApIDApostador });
+                    sqlCommand.Parameters.Add(new SqlParameter("ApIDCompetencia", System.Data.SqlDbType.Int) { Value = consultaApuestasQuery.ApIDCompetencia });
                 
                     using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
                     {
-                        if (sqlDataReader.HasRows)
+                        if (sqlDataReader.HasRows)      // Si vuelven registros, significa que ya hay una apuesta para el Apostador-Competencia
                         {
+
                             while (sqlDataReader.Read())
                             {
                                 var apuestasDTO = new GetApuestasDTO();
@@ -103,31 +106,41 @@ namespace AppPRODE22.Repository
 
                                 apuestasDTO.EquipoVNombre = sqlDataReader["EquipoVisitanteNombre"].ToString();
 
+                                apuestasDTO.ApIDApostador = Convert.ToInt32(sqlDataReader["ApIDApostador"]);
+
+                                apuestasDTO.PartIDEstado = Convert.ToInt32(sqlDataReader["PartIDEstado"]);
+
+                                apuestasDTO.tieneApuesta = true;   // Definimos un flag para que el front sepa que SI Tenia Apuestas
+
                                 response.Apuestas.Add(apuestasDTO);
                             }
                         }
-                        else
+                        else  // Si la consulta sobre apuestas volvió vacía, entonces se completa la respuesta con los partidos x competencia
                         {
                             sqlConnection.Close();
                             
                             if(consultaApuestasQuery.ApIDCompetencia != null)
                             {
-                                SelectQuery = @"SELECT PG.IDPartido, PartIDCompetencia,PartIDEquipoL, PartIDEquipoV, PartGolesL, PartGolesV, E1.EquipoNombre AS EquipoLocal,E2.EquipoNombre AS EquipoVisitante 
+                                SelectQuery = @"SELECT PG.IDPartido, PartIDCompetencia,PartIDEquipoL, PartIDEquipoV, PartGolesL, PartGolesV, E1.EquipoNombre AS EquipoLocal,E2.EquipoNombre AS EquipoVisitante, PartIDEstado 
                                             FROM PartidosGrupos AS PG 
                                             INNER JOIN Equipos AS E1 ON PG.PartIDEquipoL = E1.IDEquipo 
                                             INNER JOIN Equipos AS E2 ON PG.PartIDEquipoV = E2.IDEquipo 
-                                            WHERE PG.PartIDCompetencia = 1";
+                                            WHERE PG.PartIDCompetencia = @ApIDCompetencia";
                             }
 
                             sqlConnection.Open();
 
                             using (SqlCommand altSqlCommand = new SqlCommand(SelectQuery, sqlConnection))
                             {
-                                sqlCommand.Parameters.Add(new SqlParameter("ApostadorID", System.Data.SqlDbType.Int) { Value = consultaApuestasQuery.ApIDApostador });
+                                altSqlCommand.Parameters.Add(new SqlParameter("ApIDCompetencia", System.Data.SqlDbType.Int) { Value = consultaApuestasQuery.ApIDCompetencia });
 
                                 using (SqlDataReader altSqlDataReader = altSqlCommand.ExecuteReader())
                                 {
                                     if (altSqlDataReader.HasRows)
+
+                                    // Preparar la sentencia del INSERT INTO Apuestas ... antes de entrar en el while
+                                    //
+
                                     {
                                         while (altSqlDataReader.Read())
                                         {
@@ -145,9 +158,11 @@ namespace AppPRODE22.Repository
 
                                             apuestasDTO.ApGolesV = Convert.ToInt32(altSqlDataReader["PartGolesV"]);
 
+                                            apuestasDTO.PartIDEstado = Convert.ToInt32(altSqlDataReader["PartIDEstado"]);
+
                                             if (apuestasDTO.ApGolesL != 0 && apuestasDTO.ApGolesV != 0)
                                             {
-                                                apuestasDTO.ApGolesL = 0;
+                                                apuestasDTO.ApGolesL = 0;  // Se inicializa porque no existe en la tabla de PartidosGrupo
                                                 apuestasDTO.ApGolesV = 0;
                                             }
 
@@ -155,7 +170,13 @@ namespace AppPRODE22.Repository
 
                                             apuestasDTO.EquipoVNombre = altSqlDataReader["EquipoVisitante"].ToString();
 
+                                            apuestasDTO.tieneApuesta = false;  // Definimos un flag para que el front sepa que No Tenia Apuestas
+
                                             response.Apuestas.Add(apuestasDTO);
+
+                                            // Hacer el using del insert. Las variables se alimentan con apuestasDTO.xxxxx 
+                                            //
+
                                         }
                                     }
                                 }
@@ -185,6 +206,8 @@ namespace AppPRODE22.Repository
                 {
                     sqlCommand.Parameters.Add(new SqlParameter("ApGolesL", System.Data.SqlDbType.Int) { Value = modificacionApuestasBody.ApGolesL });
                     sqlCommand.Parameters.Add(new SqlParameter("ApGolesV", System.Data.SqlDbType.Int) { Value = modificacionApuestasBody.ApGolesV });
+                    sqlCommand.Parameters.Add(new SqlParameter("ApIDPartido", System.Data.SqlDbType.Int) { Value = modificacionApuestasBody.ApIDPartido });
+                    sqlCommand.Parameters.Add(new SqlParameter("ApIDApostador", System.Data.SqlDbType.Int) { Value = modificacionApuestasBody.ApIDApostador });
 
                     int numberOfRows = sqlCommand.ExecuteNonQuery();
 
