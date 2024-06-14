@@ -1,245 +1,169 @@
 ﻿using System.Data.SqlClient;
-
 using AppPRODE22.Controllers.DTOs;
-
 using AppPRODE22.Models;
 
 namespace AppPRODE22.Repository
 {
     public class ApostadoresHandler : DBHandler
     {
-        // Metodo para dar de alta a las sedes.-
+        // Método para agregar un nuevo apostador a la base de datos.
         public static bool altaApostadoresHandler(PostApostadoresDTO altaApostadoresBody)
         {
             bool insert = false;
 
+            // Establece la conexión con la base de datos utilizando la cadena de conexión definida.
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
-                var InsertQuery = "INSERT INTO Apostadores (IDApostador, ApostMail, ApostNombre, ApostPuntos) Values (@IDApostador, @ApostMail, @ApostNombre, @ApostPuntos)";
+                // Consulta SQL para insertar un nuevo apostador en la tabla Apostadores.
+                var InsertQuery = "INSERT INTO Apostadores (IDApostador, ApostMail, ApostNombre, ApostPuntos) VALUES (@IDApostador, @ApostMail, @ApostNombre, @ApostPuntos)";
 
+                // Abre la conexión con la base de datos.
                 sqlConnection.Open();
 
+                // Configura y ejecuta el comando SQL para insertar un nuevo apostador.
                 using (SqlCommand sqlCommand = new SqlCommand(InsertQuery, sqlConnection))
                 {
+                    // Asigna los valores a los parámetros de la consulta.
                     sqlCommand.Parameters.Add(new SqlParameter("IDApostador", System.Data.SqlDbType.Int) { Value = altaApostadoresBody.IDApostador });
-
-                    sqlCommand.Parameters.Add(new SqlParameter("ApostPuntos", System.Data.SqlDbType.Int) { Value = 0 }); // Se inicializa obligatoriamente en 0 en el alta.
-
+                    sqlCommand.Parameters.Add(new SqlParameter("ApostPuntos", System.Data.SqlDbType.Int) { Value = 0 }); // Inicializa los puntos en 0 al dar de alta.
                     sqlCommand.Parameters.Add(new SqlParameter("ApostMail", System.Data.SqlDbType.VarChar) { Value = altaApostadoresBody.ApostMail });
-
                     sqlCommand.Parameters.Add(new SqlParameter("ApostNombre", System.Data.SqlDbType.VarChar) { Value = altaApostadoresBody.AposNombre });
 
+                    // Ejecuta la consulta y verifica si se insertó una nueva fila.
                     int numberOfRows = sqlCommand.ExecuteNonQuery();
-
                     if (numberOfRows > 0)
                     {
-
-                        insert = true;
-
+                        insert = true; // Si se insertó una fila, cambia el indicador a verdadero.
                     }
-
                 }
 
+                // Cierra la conexión con la base de datos.
                 sqlConnection.Close();
-
                 return insert;
             }
         }
 
-        // ---------------------------------------------------------
-
-       /* public static List<GetApostadoresDTO> consultaApostadoresHandler(GetApostadoresDTO consultaApostadoresBody)
-        {
-            List<GetApostadoresDTO> listaApostadores = new List<GetApostadoresDTO>();
-
-            using (SqlConnection sqlConnection = new SqlConnection(connectionString))
-            {
-                var SelectQuery = string.Empty;
-
-                if (consultaApostadoresBody.IDApostador == 0)
-                {
-                    SelectQuery = "SELECT IDApostador, ApostNombre, ApostPuntos FROM Apostadores"; // El E-Mail no se trae por seguridad.
-
-                }
-
-                else
-                {
-
-                    SelectQuery = "SELECT IDApostador, ApostNombre, ApostPuntos FROM Apostadores WHERE IDApostador = @IDApostador";
-
-                }
-
-                sqlConnection.Open();
-
-                using (SqlCommand sqlCommand = new SqlCommand(SelectQuery, sqlConnection))
-                {
-                    sqlCommand.Parameters.Add(new SqlParameter("IDApostador", System.Data.SqlDbType.Int) {Value = consultaApostadoresBody.IDApostador});
-                    
-                    using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
-                    {
-
-                        if (sqlDataReader.HasRows)
-                        {
-                            while (sqlDataReader.Read())
-                            {
-                                var apostadoresDTO = new GetApostadoresDTO();
-
-                                apostadoresDTO.IDApostador = Convert.ToInt32(sqlDataReader["IDApostador"]);
-
-                                apostadoresDTO.AposPuntos = Convert.ToInt32(sqlDataReader["ApostPuntos"]);
-
-                                apostadoresDTO.AposNombre = sqlDataReader["ApostNombre"].ToString();
-
-                                listaApostadores.Add(apostadoresDTO);
-
-                            }
-
-                        }
-
-                    }
-
-                }
-
-                sqlConnection.Close();
-            }
-
-            return listaApostadores;
-        }
-         */
-
+        // Método para consultar los apostadores en la base de datos.
         public static ApostadoresResponse consultaApostadoresHandler(GetApostadoresDTO consultaApostadoresBody)
         {
-            ApostadoresResponse response = new ApostadoresResponse();
+            ApostadoresResponse response = new ApostadoresResponse
+            {
+                // Inicializa la lista de apostadores en la respuesta.
+                Apostadores = new List<GetApostadoresDTO>()
+            };
 
-            response.Apostadores = new List<GetApostadoresDTO>();
-
+            // Establece la conexión con la base de datos.
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
-                var SelectQuery = string.Empty;
+                // Selecciona la consulta SQL según el ID proporcionado.
+                var SelectQuery = consultaApostadoresBody.IDApostador == 0 ?
+                    "SELECT IDApostador, ApostNombre, ApostPuntos, ApostMail FROM Apostadores" : // Consulta para todos los apostadores si el ID es 0.
+                    "SELECT IDApostador, ApostNombre, ApostPuntos, ApostMail FROM Apostadores WHERE IDApostador = @IDApostador"; // Consulta específica para un apostador.
 
-                if(consultaApostadoresBody.IDApostador == 0)
-                {
-                    SelectQuery = "SELECT IDApostador, ApostNombre, ApostPuntos, ApostMail FROM Apostadores";
-                }
-
-                else
-                {
-                    SelectQuery = "SELECT IDApostador, ApostNombre, ApostPuntos, ApostMail FROM Apostadores WHERE IDApostador = @IDApostador";
-                }
-
+                // Abre la conexión con la base de datos.
                 sqlConnection.Open();
 
+                // Configura y ejecuta el comando SQL para consultar los apostadores.
                 using (SqlCommand sqlCommand = new SqlCommand(SelectQuery, sqlConnection))
                 {
-                    sqlCommand.Parameters.Add(new SqlParameter("IDApostador", System.Data.SqlDbType.Int) {Value = consultaApostadoresBody.IDApostador });
-                    
+                    sqlCommand.Parameters.Add(new SqlParameter("IDApostador", System.Data.SqlDbType.Int) { Value = consultaApostadoresBody.IDApostador });
+
+                    // Ejecuta la consulta y obtiene los resultados.
                     using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
                     {
+                        // Si hay resultados, lee cada fila.
                         if (sqlDataReader.HasRows)
                         {
                             while (sqlDataReader.Read())
                             {
-
-                                var apostadoresDTO = new GetApostadoresDTO();
-
-                                apostadoresDTO.IDApostador = Convert.ToInt32(sqlDataReader["IDApostador"]);
-
-                                apostadoresDTO.AposNombre = sqlDataReader["ApostNombre"].ToString();
-
-                                apostadoresDTO.AposPuntos = Convert.ToInt32(sqlDataReader["ApostPuntos"]);
-
-                                apostadoresDTO.ApostMail = sqlDataReader["ApostMail"].ToString();
+                                // Crea un objeto GetApostadoresDTO para cada apostador y lo añade a la lista de respuesta.
+                                var apostadoresDTO = new GetApostadoresDTO
+                                {
+                                    IDApostador = Convert.ToInt32(sqlDataReader["IDApostador"]),
+                                    AposNombre = sqlDataReader["ApostNombre"].ToString(),
+                                    AposPuntos = Convert.ToInt32(sqlDataReader["ApostPuntos"]),
+                                    ApostMail = sqlDataReader["ApostMail"].ToString()
+                                };
 
                                 response.Apostadores.Add(apostadoresDTO);
-
-
                             }
                         }
                     }
                 }
 
+                // Cierra la conexión con la base de datos.
                 sqlConnection.Close();
             }
 
-            return response;
+            return response; // Devuelve la respuesta con la lista de apostadores.
         }
-        //----------------------------
 
+        // Método para actualizar la información de un apostador existente.
         public static bool modificacionApostadoresHandler(PutApostadoresDTO modificacionApostadoresBody)
         {
-            using(SqlConnection sqlConnection = new SqlConnection(connectionString))
+            using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
                 bool update = false;
 
+                // Consulta SQL para actualizar los datos de un apostador.
                 var UpdateQuery = "UPDATE Apostadores SET ApostMail = @ApostMail, ApostNombre = @ApostNombre WHERE IDApostador = @IDApostador";
 
+                // Abre la conexión con la base de datos.
                 sqlConnection.Open();
 
-                using(SqlCommand sqlCommand = new SqlCommand(UpdateQuery, sqlConnection))
+                // Configura y ejecuta el comando SQL para actualizar el apostador.
+                using (SqlCommand sqlCommand = new SqlCommand(UpdateQuery, sqlConnection))
                 {
-
-                    sqlCommand.Parameters.Add(new SqlParameter("ApostMail", System.Data.SqlDbType.VarChar) { Value = modificacionApostadoresBody.ApostMail});
-
+                    // Asigna los valores a los parámetros de la consulta.
+                    sqlCommand.Parameters.Add(new SqlParameter("ApostMail", System.Data.SqlDbType.VarChar) { Value = modificacionApostadoresBody.ApostMail });
                     sqlCommand.Parameters.Add(new SqlParameter("ApostNombre", System.Data.SqlDbType.VarChar) { Value = modificacionApostadoresBody.AposNombre });
-
                     sqlCommand.Parameters.Add(new SqlParameter("IDApostador", System.Data.SqlDbType.Int) { Value = modificacionApostadoresBody.IDApostador });
 
+                    // Ejecuta la consulta y verifica si se actualizó alguna fila.
                     int numberOfRows = sqlCommand.ExecuteNonQuery();
-
-                    if(numberOfRows > 0)
+                    if (numberOfRows > 0)
                     {
-
-                        update = true;
-
+                        update = true; // Si se actualizó una fila, cambia el indicador a verdadero.
                     }
-
                 }
-                sqlConnection.Close();
 
-                return update;
+                // Cierra la conexión con la base de datos.
+                sqlConnection.Close();
+                return update; // Devuelve verdadero si se realizó la actualización.
             }
-            
         }
 
+        // Método para eliminar un apostador de la base de datos.
         public static bool bajaApostadoresHandler(DeleteApostadoresDTO bajaApostadoresBody)
         {
-            using(SqlConnection sqlConnection = new SqlConnection(connectionString))
+            using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
                 bool delete = false;
 
+                // Consulta SQL para eliminar un apostador.
                 var DeleteString = "DELETE FROM Apostadores WHERE IDApostador = @IDApostador";
 
-
+                // Abre la conexión con la base de datos.
                 sqlConnection.Open();
 
-                using(SqlCommand sqlCommand = new SqlCommand(DeleteString, sqlConnection))
+                // Configura y ejecuta el comando SQL para eliminar el apostador.
+                using (SqlCommand sqlCommand = new SqlCommand(DeleteString, sqlConnection))
                 {
-
+                    // Asigna el valor del ID del apostador a eliminar.
                     sqlCommand.Parameters.Add(new SqlParameter("IDApostador", System.Data.SqlDbType.Int) { Value = bajaApostadoresBody.IDApostador });
 
+                    // Ejecuta la consulta y verifica si se eliminó alguna fila.
                     int numberOfRows = sqlCommand.ExecuteNonQuery();
-
-                    if(numberOfRows > 0)
+                    if (numberOfRows > 0)
                     {
-
-                        delete = true;
-
+                        delete = true; // Si se eliminó una fila, cambia el indicador a verdadero.
                     }
-
-                    
                 }
 
+                // Cierra la conexión con la base de datos.
                 sqlConnection.Close();
-
-                return delete;
+                return delete; // Devuelve verdadero si se realizó la eliminación.
             }
-
-
         }
-
-
     }
 }
-
-
-// TEST.-1

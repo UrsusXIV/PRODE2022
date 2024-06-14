@@ -1,64 +1,40 @@
-﻿using AppPRODE22.Controllers.DTOs;
-using AppPRODE22.Repository;
-using Microsoft.AspNetCore.Mvc;
+﻿using AppPRODE22.Controllers.DTOs; // Importa los Data Transfer Objects (DTOs) necesarios para la transferencia de datos entre el frontend y el backend.
+using AppPRODE22.Repository; // Importa el manejador de datos que realiza operaciones de base de datos relacionadas con los equipos.
+using Microsoft.AspNetCore.Mvc; // Importa los componentes de ASP.NET Core necesarios para la construcción de la API.
 
-namespace AppPRODE22.Controllers
+namespace AppPRODE22.Controllers // Define el espacio de nombres del controlador de la API.
 {
-
-    [ApiController]
-    [Route("[controller]")]
-
+    [ApiController] // Indica que esta clase es un controlador de API.
+    [Route("[controller]")] // Define la ruta base para todas las solicitudes manejadas por este controlador.
 
     public class EquiposController
     {
-        [HttpPost]
-
+        [HttpPost] // Define que este método maneja solicitudes HTTP POST.
         public bool altaEquipo([FromBody] PostEquipoDTO altaEquiposBody)
         {
-
+            // Llama al manejador para agregar un nuevo equipo utilizando los datos proporcionados en el cuerpo de la solicitud.
             return EquiposHandler.altaEquipoHandler(altaEquiposBody);
-
         }
-        
-        // ---------------------
 
-       // [HttpGet]
-
-        // Si se le informa al backend el ID 0, devolvera todos los equipos, de otra forma, buscara el equipo pedido.
-
-        // comento el controlador GET original, para incorporar uno nuevo que devuelva un array
-        /*
-        public List<GetEquipoDTO> consultaEquipos([FromBody] GetEquipoDTO consultaEquiposBody)
-        {
-
-            return EquiposHandler.consultaEquiposHandler(consultaEquiposBody);
-        }
-        */
-
-        [HttpGet]
+        [HttpGet] // Define que este método maneja solicitudes HTTP GET.
         public EquiposResponse consultaEquipos([FromQuery] GetEquipoDTO consultaEquiposBody)
         {
+            // Llama al manejador para consultar equipos según los criterios proporcionados en la consulta de la URL.
             return EquiposHandler.consultaEquiposHandler(consultaEquiposBody);
         }
 
-
-
-        [HttpPut]
-
-        public bool modificacionEquipos([FromBody]PutEquipoDTO modificacionEquipoBody)
+        [HttpPut] // Define que este método maneja solicitudes HTTP PUT.
+        public bool modificacionEquipos([FromBody] PutEquipoDTO modificacionEquipoBody)
         {
-
+            // Llama al manejador para modificar un equipo existente utilizando los datos proporcionados en el cuerpo de la solicitud.
             return EquiposHandler.modificacionEquiposHandler(modificacionEquipoBody);
-    
         }
 
-        [HttpDelete]
-
-        public bool bajaEquipos([FromBody]DeleteEquipoDTO bajaEquipoBody)
+        [HttpDelete] // Define que este método maneja solicitudes HTTP DELETE.
+        public bool bajaEquipos([FromBody] DeleteEquipoDTO bajaEquipoBody)
         {
-
+            // Llama al manejador para eliminar un equipo utilizando los datos proporcionados en el cuerpo de la solicitud.
             return EquiposHandler.bajaEquipoHandler(bajaEquipoBody);
         }
-
     }
 }
