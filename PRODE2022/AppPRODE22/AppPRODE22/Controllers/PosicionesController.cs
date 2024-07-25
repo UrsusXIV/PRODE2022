@@ -2,7 +2,7 @@
 using AppPRODE22.Repository;
 using Microsoft.AspNetCore.Mvc;
 
-/*namespace AppPRODE22.Controllers
+namespace AppPRODE22.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -16,11 +16,5 @@ using Microsoft.AspNetCore.Mvc;
             return PosicionesHandler.consultaPosicionesHandler(consultaPosicionesQuery);
         }
 
-        [HttpPost]
-
-        [HttpPut]
-
-        [HttpDelete]
     }
-} TODAVIA SIN FUNCIONAMIENTO.
-*/
+} 

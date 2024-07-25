@@ -193,12 +193,31 @@ namespace AppPRODE22.Repository
                 // Configura y ejecuta el comando SQL para actualizar el partido de grupo.
                 using (SqlCommand sqlCommand = new SqlCommand(UpdateQuery, sqlConnection))
                 {
+                    int tempPartPuntosL = 0;
+                    int tempPartPuntosV = 0;
+
+                    if(modificacionPartidosGruposBody.PartGolesL > modificacionPartidosGruposBody.PartGolesV)
+                    {
+                        tempPartPuntosL = 3;
+                        tempPartPuntosV = 0;
+                    }
+                    if(modificacionPartidosGruposBody.PartGolesV > modificacionPartidosGruposBody.PartGolesL)
+                    {
+                        tempPartPuntosL = 0;
+                        tempPartPuntosV = 3;
+                    }
+                    if(modificacionPartidosGruposBody.PartGolesL == modificacionPartidosGruposBody.PartGolesV)
+                    {
+                        tempPartPuntosL = 1;
+                        tempPartPuntosV = 1;
+                    }
+
                     // Asigna los valores de los parámetros de la consulta.
                     sqlCommand.Parameters.Add(new SqlParameter("PartIDEstado", System.Data.SqlDbType.Int) { Value = modificacionPartidosGruposBody.PartIDEstado });
                     sqlCommand.Parameters.Add(new SqlParameter("PartGolesL", System.Data.SqlDbType.Int) { Value = modificacionPartidosGruposBody.PartGolesL });
                     sqlCommand.Parameters.Add(new SqlParameter("PartGolesV", System.Data.SqlDbType.Int) { Value = modificacionPartidosGruposBody.PartGolesV });
-                    sqlCommand.Parameters.Add(new SqlParameter("PartPuntosL", System.Data.SqlDbType.Int) { Value = modificacionPartidosGruposBody.PartPuntosL });
-                    sqlCommand.Parameters.Add(new SqlParameter("PartPuntosV", System.Data.SqlDbType.Int) { Value = modificacionPartidosGruposBody.PartPuntosV });
+                    sqlCommand.Parameters.Add(new SqlParameter("PartPuntosL", System.Data.SqlDbType.Int) { Value = tempPartPuntosL });
+                    sqlCommand.Parameters.Add(new SqlParameter("PartPuntosV", System.Data.SqlDbType.Int) { Value = tempPartPuntosV });
                     sqlCommand.Parameters.Add(new SqlParameter("IDPartido", System.Data.SqlDbType.Int) { Value = modificacionPartidosGruposBody.PartIDPartido });
 
                     // Ejecuta la consulta y obtiene el número de filas afectadas.
@@ -210,14 +229,124 @@ namespace AppPRODE22.Repository
                         update = true;
                     }
                 }
+                // Devuelve true si la actualización fue exitosa, false de lo contrario.
 
                 // Cierra la conexión con la base de datos.
                 sqlConnection.Close();
 
-                // Devuelve true si la actualización fue exitosa, false de lo contrario.
+              
+
+                if(modificacionPartidosGruposBody.PartIDEstado == 3)
+                {
+                    traerYActualizar(modificacionPartidosGruposBody.PartIDPartido, modificacionPartidosGruposBody.PartGolesL, modificacionPartidosGruposBody.PartGolesV);
+                }
+
                 return update;
+
             }
         }
+
+        public static void traerYActualizar(int partidoSeleccionado, int golesLocal, int golesVisitante) // Rutina de la actualizacion de la tabla de apuestas, en caso de que el partido llegue finalizado.
+        {
+            ApuestasResponse response = new ApuestasResponse();
+            response.Apuestas = new List<GetApuestasDTO>();
+
+            using (SqlConnection sqlConnectionInternalGet = new SqlConnection(connectionString))
+            {
+                var routineQueryGet = "SELECT * FROM Apuestas WHERE ApIDPartido = @ApIDPartido";
+
+                sqlConnectionInternalGet.Open();
+                
+                using (SqlCommand sqlCommand = new SqlCommand(routineQueryGet, sqlConnectionInternalGet))
+                {
+                    sqlCommand.Parameters.Add(new SqlParameter("ApIDPartido", System.Data.SqlDbType.Int) { Value = partidoSeleccionado });
+
+                    using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
+                    {
+                        if (sqlDataReader.HasRows)
+                        {
+                            while (sqlDataReader.Read())
+                            {
+                                 var apuestasRecuperadas = new GetApuestasDTO
+                                {
+                                    ApIDPartido = Convert.ToInt32(sqlDataReader["ApIDPartido"]),
+                                    ApIDApostador = Convert.ToInt32(sqlDataReader["ApIDApostador"]),
+                                    ApGolesL = Convert.ToInt32(sqlDataReader["ApGolesL"]),
+                                    ApGolesV = Convert.ToInt32(sqlDataReader["ApGolesV"]),
+                                    ApPuntosObtenidos = Convert.ToInt32(sqlDataReader["ApPuntosObtenidos"]),
+                                };
+
+                                response.Apuestas.Add(apuestasRecuperadas);
+                            }
+                        }
+                    }
+                }
+             sqlConnectionInternalGet.Close();
+            }
+
+            using(SqlConnection sqlConnectionInternalPut = new SqlConnection(connectionString))
+            {
+                string resultadoPartido = string.Empty;
+
+                var routineQueryUpdate = "UPDATE Apuestas SET ApPuntosObtenidos = @ApPuntosObtenidos WHERE ApIDPartido = @ApIDPartido AND ApIDApostador = @ApIDApostador";
+
+                sqlConnectionInternalPut.Open();
+                
+                if(golesLocal > golesVisitante)
+                {
+                     resultadoPartido = "L";
+                }
+                
+                else if(golesVisitante > golesLocal)
+                {
+                     resultadoPartido = "V";
+                }
+
+                else
+                {
+                    resultadoPartido = "E";   
+                }
+
+                foreach(var apuestas in response.Apuestas)
+                {
+
+                    using(SqlCommand sqlCommand = new SqlCommand(routineQueryUpdate, sqlConnectionInternalPut))
+                    {
+                        int puntosObtenidos = 0;
+
+                        if (golesLocal == apuestas.ApGolesL && apuestas.ApGolesV == golesVisitante)
+                        {
+                            puntosObtenidos = 5;
+                        }
+
+                        else if (apuestas.ApGolesL > apuestas.ApGolesV && resultadoPartido == "L")
+                        {
+                            puntosObtenidos = 3;
+                        }
+
+                        else if (apuestas.ApGolesV > apuestas.ApGolesL && resultadoPartido == "V")
+                        {
+                            puntosObtenidos = 3;
+                        }
+
+                        else if(apuestas.ApGolesL == apuestas.ApGolesV && resultadoPartido == "E")
+                        {
+                            puntosObtenidos = 3;
+                        }
+                        sqlCommand.Parameters.Add(new SqlParameter("ApIDPartido", System.Data.SqlDbType.Int) { Value = apuestas.ApIDPartido });
+                        sqlCommand.Parameters.Add(new SqlParameter("ApIDApostador", System.Data.SqlDbType.Int) { Value = apuestas.ApIDApostador });
+                        sqlCommand.Parameters.Add(new SqlParameter("ApPuntosObtenidos", System.Data.SqlDbType.Int) { Value = puntosObtenidos });
+
+                        sqlCommand.ExecuteNonQuery();
+                    }
+
+                    sqlConnectionInternalPut.Close();
+                }
+            }
+
+        }
+        
+
 
         // Método para eliminar un partido de grupo de la base de datos.
         public static bool bajaPartidosGrupoHandler(DeletePartidosGruposDTO bajaPartidosGrupoBody)

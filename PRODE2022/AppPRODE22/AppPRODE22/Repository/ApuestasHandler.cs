@@ -115,6 +115,13 @@ namespace AppPRODE22.Repository
                                 };
 
                                 // Añade el DTO de la apuesta a la lista de respuesta.
+                                if(apuestasDTO.ApGolesL == -1 && apuestasDTO.ApGolesV == -1)
+                                {
+                                    apuestasDTO.ApGolesL = 0;
+                                    apuestasDTO.ApGolesV = 0;
+
+                                    // Enmascara el -1 del POST general inicial, como una primera medida para validar apuestas posteriores.
+                                }
                                 response.Apuestas.Add(apuestasDTO);
                             }
                         }

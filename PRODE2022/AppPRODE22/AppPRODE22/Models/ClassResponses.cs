@@ -44,4 +44,9 @@
     {
         public List<Controllers.DTOs.GetApuestasDTO> Apuestas { get; set; }
     }
+
+    public class PosicionesResponse
+    {
+        public List <Controllers.DTOs.GetPosiciones> Posiciones { get; set; }
+    }
 }
